@@ -3,7 +3,7 @@ export type Uid = string;
 
 export type VirtualPin = {
     id: Uid;
-    gateId: Uid;
+    gateId: Uid | 'in' | 'out';
     // name: string;
     // sorting: number;
 };
@@ -36,9 +36,11 @@ export type Connection = {
 export type Gate = {
     gateType: string;
 
-    inputs: Uid[];
-    outputs: Uid[];
+    inputPins: Uid[];
+    outputPins: Uid[];
 
+    virtualPins: VirtualPin[];
+    virtualGates: VirtualGate[];
     connections: Connection[];
 };
 
