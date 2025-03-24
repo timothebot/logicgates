@@ -11,22 +11,18 @@ Deno.test({
         assertEquals(
             runGate(
                 NOT_GATE,
-                {
-                    "in": false
-                },
+                [false],
                 simulationManager
             ),
-            { "out": true }
+            [true]
         );
         assertEquals(
             runGate(
                 NOT_GATE,
-                {
-                    "in": true
-                },
+                [true],
                 simulationManager
             ),
-            { "out": false }
+            [false]
         );
     }
 });
@@ -38,46 +34,34 @@ Deno.test({
         assertEquals(
             runGate(
                 AND_GATE,
-                {
-                    "in-a": true,
-                    "in-b": true
-                },
+                [true, true],
                 simulationManager
             ),
-            { "out": true }
+            [true]
         );
         assertEquals(
             runGate(
                 AND_GATE,
-                {
-                    "in-a": false,
-                    "in-b": true
-                },
+                [false, true],
                 simulationManager
             ),
-            { "out": false }
+            [false]
         );
         assertEquals(
             runGate(
                 AND_GATE,
-                {
-                    "in-a": true,
-                    "in-b": false
-                },
+                [true, false],
                 simulationManager
             ),
-            { "out": false }
+            [false]
         );
         assertEquals(
             runGate(
                 AND_GATE,
-                {
-                    "in-a": false,
-                    "in-b": false
-                },
+                [false, false],
                 simulationManager
             ),
-            { "out": false }
+            [false]
         );
     }
 });
@@ -190,46 +174,34 @@ Deno.test({
         assertEquals(
             runGate(
                 nandGate,
-                {
-                    "input-a": false,
-                    "input-b": false
-                },
+                [false, false],
                 simulationManager
             ),
-            { "output": true }
+            [true]
         );
         assertEquals(
             runGate(
                 nandGate,
-                {
-                    "input-a": false,
-                    "input-b": true
-                },
+                [false, true],
                 simulationManager
             ),
-            { "output": true }
+            [true]
         );
         assertEquals(
             runGate(
                 nandGate,
-                {
-                    "input-a": true,
-                    "input-b": false
-                },
+                [true, false],
                 simulationManager
             ),
-            { "output": true }
+            [true]
         );
         assertEquals(
             runGate(
                 nandGate,
-                {
-                    "input-a": true,
-                    "input-b": true
-                },
+                [true, true],
                 simulationManager
             ),
-            { "output": false }
+            [false]
         );
     }
 });
@@ -300,46 +272,34 @@ Deno.test({
         assertEquals(
             runGate(
                 orGate,
-                {
-                    "input-a": true,
-                    "input-b": true
-                },
+                [true, true],
                 orSimManager
             ),
-            { "output": true }
+            [true]
         );
         assertEquals(
             runGate(
                 orGate,
-                {
-                    "input-a": false,
-                    "input-b": true
-                },
+                [false, true],
                 orSimManager
             ),
-            { "output": true }
+            [true]
         );
         assertEquals(
             runGate(
                 orGate,
-                {
-                    "input-a": true,
-                    "input-b": false
-                },
+                [true, false],
                 orSimManager
             ),
-            { "output": true }
+            [true]
         );
         assertEquals(
             runGate(
                 orGate,
-                {
-                    "input-a": false,
-                    "input-b": false
-                },
+                [false, false],
                 orSimManager
             ),
-            { "output": false }
+            [false]
         );
     }
 });
@@ -442,46 +402,34 @@ Deno.test({
         assertEquals(
             runGate(
                 xorGate,
-                {
-                    "input-a": false,
-                    "input-b": true
-                },
+                [false, true],
                 xorSimManager
             ),
-            { "output": true }
+            [true]
         );
         assertEquals(
             runGate(
                 xorGate,
-                {
-                    "input-a": true,
-                    "input-b": false
-                },
+                [true, false],
                 xorSimManager
             ),
-            { "output": true }
+            [true]
         );
         assertEquals(
             runGate(
                 xorGate,
-                {
-                    "input-a": false,
-                    "input-b": false
-                },
+                [false, false],
                 xorSimManager
             ),
-            { "output": false }
+            [false]
         );
         assertEquals(
             runGate(
                 xorGate,
-                {
-                    "input-a": true,
-                    "input-b": true
-                },
+                [true, true],
                 xorSimManager
             ),
-            { "output": false }
+            [false]
         );
     }
 });

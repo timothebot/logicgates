@@ -28,25 +28,14 @@ export function simulateGate(
 ): boolean[] {
     const pinValues: Map<Uid, boolean> = new Map<Uid, boolean>();
 
-    // TODO: we need to map each input to its same input
-    inputValues.forEach((value, index) => {
-        const pin = gate.virtualPins.find(pin => pin.index == index && pin.gateId == "in");
-        console.log("pin: ", pin)
-    })
-    Object.keys(inputValues).forEach(pinId => {
-        gate.inputPins.indexOf
-    })
-    gate.inputPins.forEach(pinId => {
-        const pin = getPinFromGate(gate, pinId);
-        console.log(pin)
-        const value = gate.inputPins[]
+    gate.inputPins.forEach((pinId, index) => {
         pinValues.set(
-            pin.id,
-            value
+            pinId,
+            inputValues[index]
         );
         const connections = gate.connections.filter(conn => conn.from == pinId);
         connections.forEach(conn => {
-            pinValues.set(conn.to, value);
+            pinValues.set(conn.to, inputValues[index]);
         });
     });
 
@@ -62,13 +51,14 @@ export function simulateGate(
             }
             changesOccurred = true;
 
-            const inPins: Record<Uid, boolean> = {};
+            const inPins: boolean[] = [];
             vGate.inputPins.forEach(pinId => {
                 if (!pinValues.has(pinId)) {
                     return;
                 }
+                const pin = getPinFromGate(gate, pinId);
                 // @ts-ignore: This is already evaluated above
-                inPins[pinId] = pinValues.get(pinId);
+                inPins[pin.index] = pinValues.get(pinId);
             });
 
             if (Object.keys(inPins).length !== vGate.inputPins.length) {
@@ -78,62 +68,50 @@ export function simulateGate(
             const currentGate = getGateByType(manager, vGate.gateType);
             const output = runGate(currentGate, inPins, manager);
             
-            // map currentGate outputs
-            currentGate.outputPins.forEach((value, index) => {
-                output[vGate.outputPins[index]] = output[value];
-            });
-
             vGate.outputPins.forEach(pinId => {
-                pinValues.set(pinId, output[pinId]);
+                const pin = getPinFromGate(gate, pinId);
+
+                pinValues.set(pinId, output[pin.index]);
 
                 // add the new pin values
                 const connections = gate.connections.filter(conn => conn.from == pinId);
                 connections.forEach(conn => {
-                    if (output[pinId] == undefined) {
+                    if (output[pin.index] == undefined) {
                         throw Error("no output");
                     }
-                    pinValues.set(conn.to, output[pinId]);
+                    pinValues.set(conn.to, output[pin.index]);
                 });
             });
         });
     }
 
-    const outputValues: Record<Uid, boolean> = {};
+    const outputValues: boolean[] = [];
     gate.outputPins.forEach((pinId) => {
         if (!pinValues.has(pinId)) {
             throw Error("no pinValue output")
         }
+        const pin = getPinFromGate(gate, pinId);
         const value = pinValues.get(pinId);
         // @ts-ignore
-        outputValues[pinId] = value;
+        outputValues[pin.index] = value;
     });
-
-    console.log(outputValues)
 
     return outputValues;
 }
 
 export function runGate(
     gate: Gate,
-    inputs: Record<Uid, boolean>,
+    inputs: boolean[],
     manager: SimulationManager
-): Record<Uid, boolean> {
-    if (gate.gateType === "not" || gate.gateType === "and") {
-        const output: Record<Uid, boolean> = {};
-        if (gate.gateType == "not") {
-            if (Object.values(inputs).length != 1) {
-                throw Error("gate 'not' needs exactly 1 input");
-            }
-            gate.outputPins.forEach(outPinId => {
-                output[outPinId] = !Object.values(inputs)[0];
-            });
+): boolean[] {
+    if (gate.gateType == "not") {
+        if (Object.values(inputs).length != 1) {
+            throw Error("gate 'not' needs exactly 1 input");
         }
-        if (gate.gateType == "and") {
-            gate.outputPins.forEach(outPinId => {
-                output[outPinId] = Object.values(inputs).every(value => value);
-            });
-        }
-        return output;
+        return [!Object.values(inputs)[0]];
+    }
+    if (gate.gateType == "and") {
+        return [Object.values(inputs).every(value => value)];
     }
 
     if (gate.inputPins.length != Object.keys(inputs).length) {
