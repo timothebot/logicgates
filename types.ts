@@ -4,6 +4,7 @@ export type Uid = string;
 export type VirtualPin = {
     id: Uid;
     gateId: Uid | 'in' | 'out';
+    index: number;
     // name: string;
     // sorting: number;
 };
@@ -33,6 +34,10 @@ export type Connection = {
     to: Uid;
 };
 
+export type DecisionTable = {
+    [key: string]: number[];
+}
+
 export type Gate = {
     gateType: string;
 
@@ -42,6 +47,8 @@ export type Gate = {
     virtualPins: VirtualPin[];
     virtualGates: VirtualGate[];
     connections: Connection[];
+
+    decisionTable?: DecisionTable;
 };
 
 export type SimulationManager = {
