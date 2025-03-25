@@ -57,3 +57,8 @@ export type Gate = {
 export type SimulationManager = {
     gatesLookup: Gate[];
 };
+
+export enum EditorTool {
+    Default,
+    Select
+}
