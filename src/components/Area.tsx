@@ -1,25 +1,50 @@
 import PanZoom, { API } from "@sasza/react-panzoom";
 import AreaElement from "./AreaElement";
-import { getPositionsFromConnection } from "../lib/gates";
-import Xarrow, { useXarrow } from "react-xarrows";
-import { useContext, useEffect, useRef } from "react";
-import { EditorTool, Gate } from "../lib/types";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { EditorTool, Gate, Uid } from "../lib/types";
 import { EquippedToolContext } from "../App";
+import Connections from "./Connections";
+import ArrowToCursor from "./ArrowToCursor";
 
-export default function Area({ activeGate }: { activeGate: Gate }) {
-    const updateXarrow = useXarrow();
+export const IsConnectingContext = createContext<Uid[]>([]);
+
+export default function Area({
+    activeGate,
+    setActiveGate,
+}: {
+    activeGate: Gate;
+    setActiveGate: (gate: Gate) => void;
+}) {
+    const [isConnecting, setIsConnecting] = useState<Uid[]>([]);
     const panZoomRef = useRef<API>(null);
     const tool = useContext(EquippedToolContext);
+    const [editableGate, setEditableGate] = useState<Gate>(activeGate);
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            updateXarrow();
-        }, 1);
+        if (isConnecting.length == 2) {
+            const updatedGate = { ...editableGate };
+            updatedGate.connections.push({ from: isConnecting[0], to: isConnecting[1] });
+            setEditableGate(updatedGate);
+            setIsConnecting([]);
+        }
+    }, [isConnecting]);
+
+    useEffect(() => {
+        const saveInterval = setInterval(() => {
+            const updatedGate = { ...editableGate };
+            Object.values(panZoomRef.current?.getElements() || {}).forEach(element => {
+                const gate = updatedGate.virtualGates.find(vGate => vGate.id == element.id);
+                if (gate) {
+                    gate.position = element.position;
+                }
+            })
+            setActiveGate(editableGate);
+        }, 1000);
 
         return () => {
-            clearInterval(interval);
+            clearInterval(saveInterval);
         };
-    }, []);
+    }, [editableGate, activeGate]);
 
     return (
         <div style={{ width: "100dvw", height: "100dvh" }}>
@@ -27,33 +52,23 @@ export default function Area({ activeGate }: { activeGate: Gate }) {
                 height={2000}
                 width={2000}
                 selecting={tool == EditorTool.Select}
-                boundary={true}
                 zoomMin={0.9}
                 ref={panZoomRef}
             >
-                {activeGate.virtualGates.map((vGate) => (
-                    <AreaElement key={vGate.id} element={vGate} />
-                ))}
+                <IsConnectingContext.Provider value={isConnecting}>
+                    {editableGate.virtualGates.map((vGate) => (
+                        <AreaElement
+                            key={vGate.id}
+                            setIsConnecting={setIsConnecting}
+                            element={vGate}
+                        />
+                    ))}
+                </IsConnectingContext.Provider>
             </PanZoom>
-            {activeGate.connections.map((conn) => {
-                const pos = getPositionsFromConnection(activeGate, conn);
-                if (pos == undefined) {
-                    return <></>;
-                }
-
-                return (
-                    <Xarrow
-                        headSize={4}
-                        strokeWidth={2}
-                        key={conn.to}
-                        // path={"grid"}
-                        startAnchor={"right"}
-                        endAnchor={"left"}
-                        start={conn.from}
-                        end={conn.to}
-                    />
-                );
-            })}
+            <Connections gate={editableGate} />
+            {isConnecting.length > 0 && (
+                <ArrowToCursor connections={isConnecting} />
+            )}
         </div>
     );
 }

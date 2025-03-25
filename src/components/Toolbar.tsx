@@ -1,9 +1,7 @@
 import { ReactNode, useContext, useEffect } from "react";
 import { EditorTool } from "../lib/types";
-import { setEquippedTool } from "../lib/states";
 import { EquippedToolContext } from "../App";
 import { LuSquareDashedMousePointer, LuMousePointer2 } from "react-icons/lu";
-import { IconType } from "react-icons";
 
 type OptionButton = {
     label: string;
@@ -66,6 +64,12 @@ export default function Toolbar({
                     </button>
                 );
             })}
+            <button
+                        className="bg-slate-100 hover:bg-blue-100 cursor-pointer rounded p-1 shadow transition-colors"
+                        onClick={() => localStorage.clear()}
+                    >
+                        Clear Storage
+                    </button>
         </div>
     );
 }
