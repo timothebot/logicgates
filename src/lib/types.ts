@@ -1,18 +1,21 @@
 
+export type Position = {
+    x: number;
+    y: number;
+}
+
 export type Uid = string;
 
-export type VirtualPin = {
+export type Pin = {
     id: Uid;
     gateId: Uid | 'in' | 'out';
     index: number;
-    // name: string;
-    // sorting: number;
 };
 
 /**
  * Represents a gate in the physical space
  */
-export type VirtualGate = {
+export type VirtualElement = {
     id: Uid;
 
     /**
@@ -23,7 +26,7 @@ export type VirtualGate = {
     inputPins: Uid[];
     outputPins: Uid[];
 
-    // positions: Position;
+    position: Position;
 };
 
 /**
@@ -44,8 +47,8 @@ export type Gate = {
     inputPins: Uid[];
     outputPins: Uid[];
 
-    virtualPins: VirtualPin[];
-    virtualGates: VirtualGate[];
+    virtualPins: Pin[];
+    virtualGates: VirtualElement[];
     connections: Connection[];
 
     decisionTable?: DecisionTable;

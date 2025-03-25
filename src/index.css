@@ -1,0 +1,55 @@
+body {
+  margin: 0;
+  font-family: Inter;
+}
+.element {
+  padding: 5px 8px;
+  background-color: #3a98ff;
+  border-radius: 5px;
+  position: relative;
+  display: flex;
+  color: white;
+  box-shadow: 0 0 11px 0px #0000003d;
+  transition: box-shadow .2s ease-in-out;
+  &:hover {
+    cursor: pointer;
+  }
+  &:active {
+    box-shadow: 0 0 11px 0px #000000ab;
+  }
+  .inner {
+    user-select: none;
+    font-weight: 500;
+  }
+  .input, .output {
+    height: 100%;
+    display: flex;
+    position: absolute;
+    flex-wrap: wrap;
+    flex-direction: column;
+    justify-content: center;
+    top: 0;
+    gap: 1px;
+  }
+  .input {
+      left: 0;
+      transform: translatex(-50%);
+  }
+  .output {
+      right: 0;
+      transform: translatex(50%);
+  }
+  span {
+      background: blue;
+      width: 5px;
+      height: 5px;
+      border-radius: 100%;
+      display: block;
+  }
+}
+
+.react-panzoom > div {
+  background-image: url("assets/grid.svg");
+  background-repeat: repeat;
+  background-size: 30px;
+}

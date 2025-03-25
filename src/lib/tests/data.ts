@@ -1,73 +1,6 @@
-import { assertEquals } from "@std/assert";
-import { runGate } from "./main.ts";
-import { Gate } from "./types.ts";
-import { AND_GATE, NOT_GATE } from "./default_gates.ts";
-import { simulationManager } from "./simulation.ts";
+import { Gate } from "../types";
 
-
-Deno.test({
-    name: "Test NOT gate",
-    fn() {
-        assertEquals(
-            runGate(
-                NOT_GATE,
-                [false],
-                simulationManager
-            ),
-            [true]
-        );
-        assertEquals(
-            runGate(
-                NOT_GATE,
-                [true],
-                simulationManager
-            ),
-            [false]
-        );
-    }
-});
-
-
-Deno.test({
-    name: "Test AND gate",
-    fn() {
-        assertEquals(
-            runGate(
-                AND_GATE,
-                [true, true],
-                simulationManager
-            ),
-            [true]
-        );
-        assertEquals(
-            runGate(
-                AND_GATE,
-                [false, true],
-                simulationManager
-            ),
-            [false]
-        );
-        assertEquals(
-            runGate(
-                AND_GATE,
-                [true, false],
-                simulationManager
-            ),
-            [false]
-        );
-        assertEquals(
-            runGate(
-                AND_GATE,
-                [false, false],
-                simulationManager
-            ),
-            [false]
-        );
-    }
-});
-
-
-const nandGate: Gate = {
+export const nandGate: Gate = {
     gateType: "nand",
 
     inputPins: [
@@ -134,7 +67,11 @@ const nandGate: Gate = {
             ],
             outputPins: [
                 "and-out"
-            ]
+            ],
+            position: {
+                x: 100,
+                y: 100
+            }
         },
         {
             id: "not-gate",
@@ -144,7 +81,11 @@ const nandGate: Gate = {
             ],
             outputPins: [
                 "not-out"
-            ]
+            ],
+            position: {
+                x: 200,
+                y: 100
+            }
         }
     ],
     connections: [
@@ -168,45 +109,7 @@ const nandGate: Gate = {
 };
 
 
-Deno.test({
-    name: "Test NAND gate",
-    fn() {
-        assertEquals(
-            runGate(
-                nandGate,
-                [false, false],
-                simulationManager
-            ),
-            [true]
-        );
-        assertEquals(
-            runGate(
-                nandGate,
-                [false, true],
-                simulationManager
-            ),
-            [true]
-        );
-        assertEquals(
-            runGate(
-                nandGate,
-                [true, false],
-                simulationManager
-            ),
-            [true]
-        );
-        assertEquals(
-            runGate(
-                nandGate,
-                [true, true],
-                simulationManager
-            ),
-            [false]
-        );
-    }
-});
-
-const orGate: Gate = {
+export const orGate: Gate = {
     gateType: "or",
     inputPins: ["input-a", "input-b"],
     outputPins: ["output"],
@@ -235,18 +138,21 @@ const orGate: Gate = {
             gateType: "not",
             inputPins: ["not-a-in"],
             outputPins: ["not-a-out"],
+            position: { x: 100, y: 100 }
         },
         {
             id: "not-b-gate",
             gateType: "not",
             inputPins: ["not-b-in"],
             outputPins: ["not-b-out"],
+            position: { x: 100, y: 100 }
         },
         {
             id: "nand-gate",
             gateType: "nand",
             inputPins: ["nand-in-a", "nand-in-b"],
             outputPins: ["nand-out"],
+            position: { x: 100, y: 100 }
         },
     ],
     connections: [
@@ -264,47 +170,7 @@ const orGate: Gate = {
 };
 
 
-Deno.test({
-    name: "Test OR gate",
-    fn() {
-        const orSimManager = { ...simulationManager };
-        orSimManager.gatesLookup.push(nandGate);
-        assertEquals(
-            runGate(
-                orGate,
-                [true, true],
-                orSimManager
-            ),
-            [true]
-        );
-        assertEquals(
-            runGate(
-                orGate,
-                [false, true],
-                orSimManager
-            ),
-            [true]
-        );
-        assertEquals(
-            runGate(
-                orGate,
-                [true, false],
-                orSimManager
-            ),
-            [true]
-        );
-        assertEquals(
-            runGate(
-                orGate,
-                [false, false],
-                orSimManager
-            ),
-            [false]
-        );
-    }
-});
-
-const xorGate: Gate = {
+export const xorGate: Gate = {
     gateType: "xor",
     inputPins: [
         "input-a",
@@ -347,31 +213,36 @@ const xorGate: Gate = {
             id: "not-a-gate",
             gateType: "not",
             inputPins: ["not-a-in"],
-            outputPins: ["not-a-out"]
+            outputPins: ["not-a-out"],
+            position: { x: 100, y: 100 }
         },
         {
             id: "not-b-gate",
             gateType: "not",
             inputPins: ["not-b-in"],
-            outputPins: ["not-b-out"]
+            outputPins: ["not-b-out"],
+            position: { x: 100, y: 200 }
         },
         {
             id: "and1-gate",
             gateType: "and",
             inputPins: ["and1-in-a", "and1-in-b"],
-            outputPins: ["and1-out"]
+            outputPins: ["and1-out"],
+            position: { x: 200, y: 200 }
         },
         {
             id: "and2-gate",
             gateType: "and",
             inputPins: ["and2-in-a", "and2-in-b"],
-            outputPins: ["and2-out"]
+            outputPins: ["and2-out"],
+            position: { x: 200, y: 100 }
         },
         {
             id: "or-gate",
             gateType: "or",
             inputPins: ["or-in-a", "or-in-b"],
-            outputPins: ["or-out"]
+            outputPins: ["or-out"],
+            position: { x: 300, y: 150 }
         }
     ],
     connections: [
@@ -393,43 +264,3 @@ const xorGate: Gate = {
         { from: "or-out", to: "output" }
     ]
 };
-
-Deno.test({
-    name: "Test XOR gate",
-    fn() {
-        const xorSimManager = { ...simulationManager };
-        xorSimManager.gatesLookup.push(orGate, nandGate);
-        assertEquals(
-            runGate(
-                xorGate,
-                [false, true],
-                xorSimManager
-            ),
-            [true]
-        );
-        assertEquals(
-            runGate(
-                xorGate,
-                [true, false],
-                xorSimManager
-            ),
-            [true]
-        );
-        assertEquals(
-            runGate(
-                xorGate,
-                [false, false],
-                xorSimManager
-            ),
-            [false]
-        );
-        assertEquals(
-            runGate(
-                xorGate,
-                [true, true],
-                xorSimManager
-            ),
-            [false]
-        );
-    }
-});

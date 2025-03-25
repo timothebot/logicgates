@@ -1,5 +1,5 @@
-import { getGateByType } from "./simulation.ts";
-import { Gate, SimulationManager, Uid, VirtualPin } from "./types.ts";
+import { getGateByType } from "./simulation";
+import { Gate, SimulationManager, Uid, Pin, Connection, Position } from "./types";
 
 export function createGate(gateType: string): Gate {
     return {
@@ -12,8 +12,21 @@ export function createGate(gateType: string): Gate {
     };
 }
 
+export function getPositionsFromConnection(gate: Gate, connection: Connection): { from: Position, to: Position; } | undefined {
+    const fromPin = gate.virtualPins.find(pin => pin.id == connection.from);
+    const toPin = gate.virtualPins.find(pin => pin.id == connection.to);
+    const fromPos = gate.virtualGates.find(vGate => vGate.id == fromPin?.gateId)?.position || undefined;
+    const toPos = gate.virtualGates.find(vGate => vGate.id == toPin?.gateId)?.position || undefined;
+    if (fromPos == undefined || toPos == undefined) {
+        return undefined;
+    }
+    return {
+        from: fromPos,
+        to: toPos
+    }
+}
 
-function getPinFromGate(gate: Gate, pinId: Uid): VirtualPin {
+function getPinFromGate(gate: Gate, pinId: Uid): Pin {
     const pin = gate.virtualPins.find(value => value.id == pinId);
     if (!pin) {
         throw Error("Pin not found");

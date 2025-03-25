@@ -1,5 +1,5 @@
-import { AND_GATE, NOT_GATE } from "./default_gates.ts";
-import { Gate, SimulationManager } from "./types.ts";
+import { AND_GATE, NOT_GATE } from "./default_gates";
+import { Gate, SimulationManager } from "./types";
 
 export function getGateByType(
     manager: SimulationManager,
