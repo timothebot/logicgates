@@ -1,9 +1,9 @@
 import { createContext, useEffect, useState } from "react";
-import "./App.css";
 import Area from "./components/Area";
 import Toolbar from "./components/Toolbar";
-import { xorGate } from "./lib/tests/data";
 import { EditorTool, Gate } from "./lib/types";
+import GateLoader from "./components/GateLoader";
+import { getCurrentGateFromStorage, getGateFromStorage, writeGateToStorage } from "./lib/utils/storage";
 
 export const EquippedToolContext = createContext<EditorTool>(
     EditorTool.Default,
@@ -13,39 +13,42 @@ function App() {
     const [tool, setTool] = useState<EditorTool>(EditorTool.Default);
     const [activeGate, setActiveGate] = useState<Gate | null>(null);
 
+    function loadCurrentGate(gateType?: string) {
+        setActiveGate(
+            getGateFromStorage(gateType || getCurrentGateFromStorage())
+        );
+    }
+
     useEffect(() => {
-        let selectedGate = localStorage.getItem("active-gate");
-        if (selectedGate === null) {
-            selectedGate = "session-" + Math.floor(Math.random() * 1000);
-            localStorage.setItem("active-gate", selectedGate);
-        }
-        let storedGate = localStorage.getItem("gate-" + selectedGate);
-        let parsedGate = xorGate;
-        if (storedGate !== null) {
-            parsedGate = JSON.parse(storedGate) as Gate;
-        }
-        setActiveGate(parsedGate)
+        loadCurrentGate();
     }, []);
 
     function saveGate(gate: Gate) {
-        const selectedGate = localStorage.getItem("active-gate");
-        if (selectedGate === null || selectedGate == "default") {
-            return;
-        }
+        const selectedGate = getCurrentGateFromStorage();
         setActiveGate(gate);
-        localStorage.setItem("gate-" + selectedGate, JSON.stringify(activeGate));
+        if (activeGate) {
+            writeGateToStorage(activeGate);
+        }
     }
 
     return (
-        <EquippedToolContext value={tool}>
-            {activeGate && (
-                <>
-                <h1>{activeGate.connections.map(conn => conn.to)}</h1>
-                    <Area activeGate={activeGate} setActiveGate={saveGate} />
-                    <Toolbar setTool={setTool} />
-                </>
-            )}
-        </EquippedToolContext>
+        <>
+            <EquippedToolContext value={tool}>
+                {activeGate && (
+                    <>
+                        <Area
+                            key={activeGate.gateType}
+                            activeGate={activeGate}
+                            saveGate={saveGate}
+                        />
+                        <Toolbar setTool={setTool} />
+                    </>
+                )}
+            </EquippedToolContext>
+            <GateLoader reloadGateType={(gateType?: string) => {
+                loadCurrentGate(gateType);
+            }} />
+        </>
     );
 }
 

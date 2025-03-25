@@ -1,45 +1,66 @@
 import PanZoom, { API } from "@sasza/react-panzoom";
 import AreaElement from "./AreaElement";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { EditorTool, Gate, Uid } from "../lib/types";
+import { EditorTool, Gate, InOut, Uid } from "../lib/types";
 import { EquippedToolContext } from "../App";
 import Connections from "./Connections";
 import ArrowToCursor from "./ArrowToCursor";
 
-export const IsConnectingContext = createContext<Uid[]>([]);
+const SAVE_INTERVAL_MS = 1000;
 
 export default function Area({
     activeGate,
-    setActiveGate,
+    saveGate,
 }: {
     activeGate: Gate;
-    setActiveGate: (gate: Gate) => void;
+    saveGate: (gate: Gate) => void;
 }) {
-    const [isConnecting, setIsConnecting] = useState<Uid[]>([]);
     const panZoomRef = useRef<API>(null);
+
     const tool = useContext(EquippedToolContext);
+
+    const [newConnections, setNewConnections] = useState<Uid[]>([]);
     const [editableGate, setEditableGate] = useState<Gate>(activeGate);
 
-    useEffect(() => {
-        if (isConnecting.length == 2) {
-            const updatedGate = { ...editableGate };
-            updatedGate.connections.push({ from: isConnecting[0], to: isConnecting[1] });
-            setEditableGate(updatedGate);
-            setIsConnecting([]);
+    function updateNewConnections(type: InOut, pinId: Uid) {
+        if (type == "in") {
+            if (
+                newConnections.length === 1 &&
+                !newConnections.includes(pinId)
+            ) {
+                const updatedGate = { ...editableGate };
+                updatedGate.connections.push({
+                    from: newConnections[0],
+                    to: newConnections[1],
+                });
+                setEditableGate(updatedGate);
+                setNewConnections([]);
+            }
+            return;
         }
-    }, [isConnecting]);
+        if (newConnections.length === 0) {
+            setNewConnections([pinId]);
+        }
+    }
 
+    /**
+     * Save the game every SAVE_INTERVAL_MS
+     */
     useEffect(() => {
         const saveInterval = setInterval(() => {
             const updatedGate = { ...editableGate };
-            Object.values(panZoomRef.current?.getElements() || {}).forEach(element => {
-                const gate = updatedGate.virtualGates.find(vGate => vGate.id == element.id);
-                if (gate) {
-                    gate.position = element.position;
-                }
-            })
-            setActiveGate(editableGate);
-        }, 1000);
+            Object.values(panZoomRef.current?.getElements() || {}).forEach(
+                (element) => {
+                    const gate = updatedGate.virtualGates.find(
+                        (vGate) => vGate.id == element.id,
+                    );
+                    if (gate) {
+                        gate.position = element.position;
+                    }
+                },
+            );
+            saveGate(editableGate);
+        }, SAVE_INTERVAL_MS);
 
         return () => {
             clearInterval(saveInterval);
@@ -53,21 +74,22 @@ export default function Area({
                 width={2000}
                 selecting={tool == EditorTool.Select}
                 zoomMin={0.9}
+                boundary={{
+                    left: 0,
+                }}
                 ref={panZoomRef}
             >
-                <IsConnectingContext.Provider value={isConnecting}>
-                    {editableGate.virtualGates.map((vGate) => (
-                        <AreaElement
-                            key={vGate.id}
-                            setIsConnecting={setIsConnecting}
-                            element={vGate}
-                        />
-                    ))}
-                </IsConnectingContext.Provider>
+                {editableGate.virtualGates.map((vGate) => (
+                    <AreaElement
+                        key={vGate.id}
+                        updateNewConnections={updateNewConnections}
+                        element={vGate}
+                    />
+                ))}
             </PanZoom>
             <Connections gate={editableGate} />
-            {isConnecting.length > 0 && (
-                <ArrowToCursor connections={isConnecting} />
+            {newConnections.length > 0 && (
+                <ArrowToCursor connections={newConnections} />
             )}
         </div>
     );

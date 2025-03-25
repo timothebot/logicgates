@@ -1,0 +1,44 @@
+import { createGate } from "../gates";
+import { Gate } from "../types";
+
+const ACTIVE_GATE_KEY = "active-gate";
+const GATE_DATA_PREFIX = "gate-";
+
+/**
+ * Returns the current gate. Sets a new one if none found
+ */
+export function getCurrentGateFromStorage(or: string): string {
+    let selectedGate = localStorage.getItem(ACTIVE_GATE_KEY);
+    if (selectedGate === null || selectedGate === "") {
+        selectedGate = or;
+        setCurrentGateInStorage(selectedGate);
+    }
+    return selectedGate;
+}
+
+export function getGateFromStorage(gateType: string): Gate {
+    const storedGate = localStorage.getItem(GATE_DATA_PREFIX + gateType);
+    if (storedGate !== null) {
+        return JSON.parse(storedGate) as Gate;
+    }
+    return createGate(gateType);
+}
+
+export function setCurrentGateInStorage(currentGate: string) {
+    localStorage.setItem(ACTIVE_GATE_KEY, currentGate);
+}
+
+export function writeGateToStorage(gate: Gate) {
+    localStorage.setItem(GATE_DATA_PREFIX + gate.gateType, JSON.stringify(gate));
+}
+
+export function listStoredGateTypes(): string[] {
+    const storedGateTypes = [];
+    for (let i = 0; i <= localStorage.length; i++) {
+        const currentItem = localStorage.key(i) || "";
+        if (currentItem.startsWith(GATE_DATA_PREFIX)) {
+            storedGateTypes.push(currentItem.substring(GATE_DATA_PREFIX.length));
+        }
+    }
+    return storedGateTypes;
+}

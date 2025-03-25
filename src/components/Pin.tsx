@@ -1,33 +1,17 @@
 import { useContext } from "react";
-import { Uid } from "../lib/types";
-import { IsConnectingContext } from "./Area";
+import { InOut, Uid } from "../lib/types";
 
 export default function Pin({
     id,
     type,
-    setIsConnecting,
+    updateNewConnections,
 }: {
     id: Uid;
-    type: "input" | "output";
-    setIsConnecting: (state: Uid[]) => void;
+    type: InOut;
+    updateNewConnections: (type: InOut, pinId: Uid) => void;
     }) {
-    const isConnecting = useContext(IsConnectingContext);
-
-    function onClick() {
-        if (type == "input") {
-            if (isConnecting.length === 1 && !isConnecting.includes(id)) {
-                setIsConnecting([ ...isConnecting, id ]);
-            }
-            return;
-        }
-        if (isConnecting.length === 0) {
-            setIsConnecting([ id ]);
-        }
-    }
 
     return (
-        <>
-            <div id={id} onClick={onClick} />
-        </>
+        <div id={id} onClick={() => updateNewConnections(type, id)} />
     );
 }

@@ -1,4 +1,4 @@
-import { createGate } from "./main";
+import { createGate } from "./gates";
 
 export const AND_GATE = createGate("and");
 AND_GATE.decisionTable = {

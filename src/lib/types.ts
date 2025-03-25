@@ -6,9 +6,11 @@ export type Position = {
 
 export type Uid = string;
 
+export type InOut = 'in' | 'out';
+
 export type Pin = {
     id: Uid;
-    gateId: Uid | 'in' | 'out';
+    gateId: Uid | InOut;
     index: number;
 };
 

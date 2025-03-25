@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { runGate } from "../main";
+import { runGate } from "../gates";
 import { AND_GATE, NOT_GATE } from "../default_gates";
 import { simulationManager } from "../simulation";
 import { nandGate, orGate, xorGate } from "./data";
