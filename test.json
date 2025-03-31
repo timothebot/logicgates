@@ -1,0 +1,342 @@
+{
+    "gateType": "test-32",
+    "inputPins": [
+        "input-a",
+        "input-b"
+    ],
+    "outputPins": [
+        "output",
+        "436e333e-da59-45f3-bc44-137a00a9bd99",
+        "853698ae-13b9-4871-9feb-557ee3ad56de",
+        "f04f9ab3-2056-4af4-a533-0b611e846335",
+        "49c64dc4-fa12-40eb-a575-4ef9194d5995",
+        "9c25f41e-c559-4056-bd78-350c9f18d224",
+        "8db1a86b-2106-411d-a094-b4a1bd0952ca"
+    ],
+    "virtualPins": [
+        {
+            "id": "input-a",
+            "gateId": "in",
+            "index": 0
+        },
+        {
+            "id": "input-b",
+            "gateId": "in",
+            "index": 1
+        },
+        {
+            "id": "output",
+            "gateId": "out",
+            "index": 0
+        },
+        {
+            "id": "not-a-in",
+            "gateId": "not-a-gate",
+            "index": 0
+        },
+        {
+            "id": "not-a-out",
+            "gateId": "not-a-gate",
+            "index": 0
+        },
+        {
+            "id": "not-b-in",
+            "gateId": "not-b-gate",
+            "index": 0
+        },
+        {
+            "id": "not-b-out",
+            "gateId": "not-b-gate",
+            "index": 0
+        },
+        {
+            "id": "and1-in-a",
+            "gateId": "and1-gate",
+            "index": 0
+        },
+        {
+            "id": "and1-in-b",
+            "gateId": "and1-gate",
+            "index": 1
+        },
+        {
+            "id": "and1-out",
+            "gateId": "and1-gate",
+            "index": 0
+        },
+        {
+            "id": "and2-in-a",
+            "gateId": "and2-gate",
+            "index": 0
+        },
+        {
+            "id": "and2-in-b",
+            "gateId": "and2-gate",
+            "index": 1
+        },
+        {
+            "id": "and2-out",
+            "gateId": "and2-gate",
+            "index": 0
+        },
+        {
+            "id": "or-in-a",
+            "gateId": "or-gate",
+            "index": 0
+        },
+        {
+            "id": "or-in-b",
+            "gateId": "or-gate",
+            "index": 1
+        },
+        {
+            "id": "or-out",
+            "gateId": "or-gate",
+            "index": 0
+        },
+        {
+            "id": "c91fe68d-2cec-458e-a939-9842e3be92aa",
+            "gateId": "8db1a86b-2106-411d-a094-b4a1bd0952ca",
+            "index": 7
+        }
+    ],
+    "virtualGates": [
+        {
+            "id": "input-a",
+            "gateType": "",
+            "elementType": "input",
+            "inputPins": [],
+            "outputPins": [
+                "input-a"
+            ],
+            "position": {
+                "x": 88.91109861438811,
+                "y": 296.2121606365357
+            }
+        },
+        {
+            "id": "input-b",
+            "gateType": "",
+            "elementType": "input",
+            "inputPins": [],
+            "outputPins": [
+                "input-b"
+            ],
+            "position": {
+                "x": 93.41824965316596,
+                "y": 538.4345556189995
+            }
+        },
+        {
+            "id": "output",
+            "gateType": "",
+            "elementType": "output",
+            "inputPins": [
+                "output"
+            ],
+            "outputPins": [],
+            "position": {
+                "x": 952.3713115012147,
+                "y": 539.8473749344294
+            }
+        },
+        {
+            "id": "not-a-gate",
+            "gateType": "not",
+            "elementType": "gate",
+            "inputPins": [
+                "not-a-in"
+            ],
+            "outputPins": [
+                "not-a-out"
+            ],
+            "position": {
+                "x": 446.92994410507424,
+                "y": 443.3158349326365
+            }
+        },
+        {
+            "id": "not-b-gate",
+            "gateType": "not",
+            "elementType": "gate",
+            "inputPins": [
+                "not-b-in"
+            ],
+            "outputPins": [
+                "not-b-out"
+            ],
+            "position": {
+                "x": 512.8416883680555,
+                "y": 380.35557725694446
+            }
+        },
+        {
+            "id": "and1-gate",
+            "gateType": "and",
+            "elementType": "gate",
+            "inputPins": [
+                "and1-in-a",
+                "and1-in-b"
+            ],
+            "outputPins": [
+                "and1-out"
+            ],
+            "position": {
+                "x": 665.593505859375,
+                "y": 248.74679565429688
+            }
+        },
+        {
+            "id": "and2-gate",
+            "gateType": "and",
+            "elementType": "gate",
+            "inputPins": [
+                "and2-in-a",
+                "and2-in-b"
+            ],
+            "outputPins": [
+                "and2-out"
+            ],
+            "position": {
+                "x": 544.3712845881851,
+                "y": 621.9690119561717
+            }
+        },
+        {
+            "id": "or-gate",
+            "gateType": "or",
+            "elementType": "gate",
+            "inputPins": [
+                "or-in-a",
+                "or-in-b"
+            ],
+            "outputPins": [
+                "or-out"
+            ],
+            "position": {
+                "x": 774.1490342881945,
+                "y": 447.9690212673611
+            }
+        },
+        {
+            "id": "436e333e-da59-45f3-bc44-137a00a9bd99",
+            "position": {
+                "x": 941.0982323426153,
+                "y": 421.11946072280364
+            },
+            "gateType": "",
+            "elementType": "output",
+            "inputPins": [
+                "9793e8ea-daf2-49fa-b251-233ad99fc2f0"
+            ],
+            "outputPins": []
+        },
+        {
+            "id": "853698ae-13b9-4871-9feb-557ee3ad56de",
+            "position": {
+                "x": 945.8520455628094,
+                "y": 335.6766740977261
+            },
+            "gateType": "",
+            "elementType": "output",
+            "inputPins": [
+                "da3e10a0-9838-4839-9024-b152f13c68c1"
+            ],
+            "outputPins": []
+        },
+        {
+            "id": "f04f9ab3-2056-4af4-a533-0b611e846335",
+            "position": {
+                "x": 830.5979634921077,
+                "y": 753.7332645232001
+            },
+            "gateType": "",
+            "elementType": "output",
+            "inputPins": [
+                "ddb56ad7-0fa8-4e74-bb5c-80a4e037f1e5"
+            ],
+            "outputPins": []
+        },
+        {
+            "id": "49c64dc4-fa12-40eb-a575-4ef9194d5995",
+            "position": {
+                "x": 777,
+                "y": 698
+            },
+            "gateType": "",
+            "elementType": "output",
+            "inputPins": [
+                "84e48eaa-ac34-4513-a5dc-3f995cd05933"
+            ],
+            "outputPins": []
+        },
+        {
+            "id": "9c25f41e-c559-4056-bd78-350c9f18d224",
+            "position": {
+                "x": 553,
+                "y": 695
+            },
+            "gateType": "",
+            "elementType": "output",
+            "inputPins": [
+                "56ed853a-e2e8-43a8-898e-6ddaa0c221bb"
+            ],
+            "outputPins": []
+        },
+        {
+            "id": "8db1a86b-2106-411d-a094-b4a1bd0952ca",
+            "position": {
+                "x": 940,
+                "y": 231
+            },
+            "gateType": "",
+            "elementType": "output",
+            "inputPins": [
+                "c91fe68d-2cec-458e-a939-9842e3be92aa"
+            ],
+            "outputPins": []
+        }
+    ],
+    "connections": [
+        {
+            "from": "input-a",
+            "to": "and1-in-a"
+        },
+        {
+            "from": "input-b",
+            "to": "and2-in-b"
+        },
+        {
+            "from": "input-a",
+            "to": "not-a-in"
+        },
+        {
+            "from": "input-b",
+            "to": "not-b-in"
+        },
+        {
+            "from": "not-a-out",
+            "to": "and2-in-a"
+        },
+        {
+            "from": "not-b-out",
+            "to": "and1-in-b"
+        },
+        {
+            "from": "and1-out",
+            "to": "or-in-a"
+        },
+        {
+            "from": "and2-out",
+            "to": "or-in-b"
+        },
+        {
+            "from": "or-out",
+            "to": "output"
+        },
+        {
+            "from": "and1-out",
+            "to": "c91fe68d-2cec-458e-a939-9842e3be92aa"
+        }
+    ]
+}

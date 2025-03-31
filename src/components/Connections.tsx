@@ -32,6 +32,7 @@ export default function Connections({ gate }: { gate: Gate; }) {
                         (!isElementVisible(conn.from) &&
                         !isElementVisible(conn.to))
                     ) {
+                        console.log(conn, pos)
                         return false;
                     }
                     return true;

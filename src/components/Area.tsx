@@ -1,12 +1,13 @@
 import PanZoom, { API } from "@sasza/react-panzoom";
 import AreaElement from "./AreaElement";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { ActiveSimulation, EditorTool, Gate, InOut, Uid } from "../lib/types";
+import { ActiveSimulation, EditorTool, Gate, InOut, Uid, VirtualElement, Position, Pin } from "../lib/types";
 import { EquippedToolContext } from "../App";
 import Connections from "./Connections";
 import ArrowToCursor from "./ArrowToCursor";
 import { getSimulationManagerFromStorage } from "../lib/utils/storage";
 import { simulateGate } from "../lib/gates";
+import ElementSelector from "./ElementSelector";
 
 const SAVE_INTERVAL_MS = 1000;
 
@@ -32,6 +33,7 @@ export default function Area({
         activeElements: [],
         activeInputs: [],
     });
+    const [elementSelectorPosition, setElementSelectorPosition] = useState<Position>({x: 0, y: 0});
 
     function updateNewConnections(type: InOut, pinId: Uid) {
         if (type == "in") {
@@ -44,7 +46,6 @@ export default function Area({
                     from: newConnections[0],
                     to: pinId,
                 });
-                console.log(updatedGate.connections.length);
                 setEditableGate(updatedGate);
                 setNewConnections([]);
             }
@@ -131,10 +132,37 @@ export default function Area({
         };
     }, [editableGate, activeGate]);
 
+    function handleClick(props: any) {
+        if (props.e.shiftKey) {
+            setElementSelectorPosition({
+                x: props.e.clientX,
+                y: props.e.clientY
+            })
+        }
+    }
+
+    function addElement(element: VirtualElement, pins: Pin[]) {
+        const updatedGate = { ...editableGate };
+        updatedGate.virtualGates.push(element);
+        if (element.elementType == "input") {
+            updatedGate.inputPins.push(element.id)
+            pins[0].index = updatedGate.inputPins.length;
+        }
+        if (element.elementType == "output") {
+            updatedGate.outputPins.push(element.id)
+            pins[0].index = updatedGate.outputPins.length;
+        }
+        updatedGate.virtualPins.push(...pins)
+        setEditableGate(updatedGate);
+        setElementSelectorPosition({x: 0, y: 0})
+    }
+
     return (
         <div style={{ width: "100dvw", height: "100dvh" }}>
             <ActiveSimulationContext value={activeSimulation}>
                 <PanZoom
+                    onContextMenu={(props) => props.e.preventDefault()}
+                    onContainerClick={handleClick}
                     height={2000}
                     width={2000}
                     selecting={tool == EditorTool.Select}
@@ -153,22 +181,11 @@ export default function Area({
                         />
                     ))}
                 </PanZoom>
-                {/* 
-            <InputOutputArea
-                type={"in"}
-                pins={activeGate.inputPins}
-                updateNewConnections={updateNewConnections}
-            />
-            <InputOutputArea
-                type={"out"}
-                pins={activeGate.outputPins}
-                updateNewConnections={updateNewConnections}
-            />
-            */}
                 <Connections gate={editableGate} />
                 {newConnections.length > 0 && (
                     <ArrowToCursor connections={newConnections} />
                 )}
+                <ElementSelector position={elementSelectorPosition} addElement={addElement} />
             </ActiveSimulationContext>
         </div>
     );

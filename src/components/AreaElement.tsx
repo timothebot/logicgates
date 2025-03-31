@@ -16,7 +16,7 @@ export default function AreaElement({
     const activeSimulation = useContext(ActiveSimulationContext);
     const [isActive, setIsActive] = useState(false);
 
-    function handleClick(event: any) {
+    function handleClick(_: any) {
         if (element.elementType == "input") {
             toggleInput(element.id);
         }

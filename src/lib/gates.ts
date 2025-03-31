@@ -1,5 +1,5 @@
 import { getGateByType } from "./simulation";
-import { Gate, SimulationManager, Uid, Pin, Connection, Position } from "./types";
+import { Gate, SimulationManager, Uid, Pin, Connection, Position, VirtualElement } from "./types";
 
 export function createGate(gateType: string): Gate {
     return {
@@ -34,6 +34,13 @@ function getPinFromGate(gate: Gate, pinId: Uid): Pin {
     return pin;
 }
 
+function isGateConnected(gate: Gate, virtualGate: VirtualElement) {
+    const connections = gate.connections.filter(conn => {
+        return virtualGate.inputPins.includes(conn.to);
+    })
+    return connections.length === virtualGate.inputPins.length;
+}
+
 type SimulatedResult = {
     gate: Gate;
     pinValues: Map<Uid, boolean>;
@@ -58,12 +65,15 @@ export function simulateGate(
     });
 
     let changesOccurred = true;
-    while (changesOccurred) {
+    let iterations = 0;
+    while (changesOccurred && iterations < 1000) {
+        iterations++;
         changesOccurred = false;
 
         gate.virtualGates.forEach(vGate => {
             // check if already calculated this gate
             if (vGate.outputPins.length == 0 ||
+                !isGateConnected(gate, vGate) ||
                 pinValues.has(vGate.outputPins[0])) {
                 return;
             }
