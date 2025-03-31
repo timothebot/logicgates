@@ -7,7 +7,7 @@ import {
 } from "../lib/utils/storage";
 import { LuMenu, LuTrash2 } from "react-icons/lu";
 import { Gate } from "../lib/types";
-import { xorGate } from "../lib/tests/data";
+import { nandGate, orGate, xorGate } from "../lib/tests/data";
 
 export default function GateLoaderMenu({
     reloadGateType,
@@ -38,7 +38,7 @@ export default function GateLoaderMenu({
     }
 
     function debugCreateGateFromTemplate() {
-        const newGate = { ...xorGate };
+        const newGate = { ...nandGate };
         newGate.gateType = "test-" + Math.floor(Math.random() * 420);
         writeGateToStorage(newGate);
     }

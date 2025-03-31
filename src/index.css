@@ -3,18 +3,22 @@
 body {
     margin: 0;
     font-family: Inter;
+    overflow: hidden;
 }
 .element {
     padding: 5px 8px;
-    background-color: #3a98ff;
     border-radius: 5px;
     position: relative;
     display: flex;
     color: white;
     box-shadow: 0 0 11px 0px #0000003d;
     transition: box-shadow 0.2s ease-in-out;
+    background-color: #5e89b7;
     &:hover {
         cursor: pointer;
+    }
+    &.active {
+        background-color: #3a98ff;
     }
     &:active {
         box-shadow: 0 0 11px 0px #000000ab;

@@ -1,5 +1,6 @@
+import { AND_GATE, NOT_GATE } from "../default_gates";
 import { createGate } from "../gates";
-import { Gate } from "../types";
+import { Gate, SimulationManager } from "../types";
 
 const ACTIVE_GATE_KEY = "active-gate";
 const GATE_DATA_PREFIX = "gate-";
@@ -46,4 +47,12 @@ export function listStoredGateTypes(): string[] {
 
 export function removeGateFromStorage(gateType: string) {
     localStorage.removeItem(GATE_DATA_PREFIX + gateType);
+}
+
+export function getSimulationManagerFromStorage(): SimulationManager {
+    const allGates: Gate[] = listStoredGateTypes().map(gateType => getGateFromStorage(gateType));
+    allGates.push(NOT_GATE, AND_GATE);
+    return {
+        gatesLookup: allGates
+    }
 }

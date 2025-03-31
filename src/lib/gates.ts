@@ -23,7 +23,7 @@ export function getPositionsFromConnection(gate: Gate, connection: Connection): 
     return {
         from: fromPos,
         to: toPos
-    }
+    };
 }
 
 function getPinFromGate(gate: Gate, pinId: Uid): Pin {
@@ -34,11 +34,16 @@ function getPinFromGate(gate: Gate, pinId: Uid): Pin {
     return pin;
 }
 
+type SimulatedResult = {
+    gate: Gate;
+    pinValues: Map<Uid, boolean>;
+}
+
 export function simulateGate(
     gate: Gate,
     inputValues: boolean[], // change this to make it semi-work
     manager: SimulationManager
-): boolean[] {
+): SimulatedResult {
     const pinValues: Map<Uid, boolean> = new Map<Uid, boolean>();
 
     gate.inputPins.forEach((pinId, index) => {
@@ -80,7 +85,7 @@ export function simulateGate(
 
             const currentGate = getGateByType(manager, vGate.gateType);
             const output = runGate(currentGate, inPins, manager);
-            
+
             vGate.outputPins.forEach(pinId => {
                 const pin = getPinFromGate(gate, pinId);
 
@@ -98,13 +103,20 @@ export function simulateGate(
         });
     }
 
+    return {
+        gate: gate,
+        pinValues: pinValues
+    };
+}
+
+export function getResultFromSimulatedGate(simulatedData: SimulatedResult): boolean[] {
     const outputValues: boolean[] = [];
-    gate.outputPins.forEach((pinId) => {
-        if (!pinValues.has(pinId)) {
-            throw Error("no pinValue output")
+    simulatedData.gate.outputPins.forEach((pinId) => {
+        if (!simulatedData.pinValues.has(pinId)) {
+            throw Error("no pinValue output");
         }
-        const pin = getPinFromGate(gate, pinId);
-        const value = pinValues.get(pinId);
+        const pin = getPinFromGate(simulatedData.gate, pinId);
+        const value = simulatedData.pinValues.get(pinId);
         // @ts-ignore
         outputValues[pin.index] = value;
     });
@@ -131,9 +143,11 @@ export function runGate(
         throw Error("Input length mismatch");
     }
 
-    return simulateGate(
-        gate,
-        inputs,
-        manager
+    return getResultFromSimulatedGate(
+        simulateGate(
+            gate,
+            inputs,
+            manager
+        )
     );
 }

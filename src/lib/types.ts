@@ -68,3 +68,8 @@ export enum EditorTool {
     Default,
     Select
 }
+
+export type ActiveSimulation = {
+    activeElements: Uid[];
+    activeInputs: Uid[];
+};
