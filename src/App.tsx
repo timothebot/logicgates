@@ -2,8 +2,15 @@ import { createContext, useEffect, useState } from "react";
 import Area from "./components/Area";
 import Toolbar from "./components/Toolbar";
 import { EditorTool, Gate } from "./lib/types";
-import GateLoader from "./components/GateLoader";
-import { getCurrentGateFromStorage, getGateFromStorage, writeGateToStorage } from "./lib/utils/storage";
+import GateLoaderMenu from "./components/GateLoaderMenu";
+import {
+    getCurrentGateFromStorage,
+    getGateFromStorage,
+    removeGateFromStorage,
+    setCurrentGateInStorage,
+    writeGateToStorage,
+} from "./lib/utils/storage";
+import GateTitle from "./components/GateTitle";
 
 export const EquippedToolContext = createContext<EditorTool>(
     EditorTool.Default,
@@ -15,7 +22,7 @@ function App() {
 
     function loadCurrentGate(gateType?: string) {
         setActiveGate(
-            getGateFromStorage(gateType || getCurrentGateFromStorage())
+            getGateFromStorage(gateType || getCurrentGateFromStorage()),
         );
     }
 
@@ -24,11 +31,15 @@ function App() {
     }, []);
 
     function saveGate(gate: Gate) {
-        const selectedGate = getCurrentGateFromStorage();
+        const currentGateType = activeGate?.gateType || "";
+
         setActiveGate(gate);
-        if (activeGate) {
-            writeGateToStorage(activeGate);
+        // check if the name was changed
+        if (gate.gateType != currentGateType) {
+            setCurrentGateInStorage(gate.gateType);
+            removeGateFromStorage(currentGateType);
         }
+        writeGateToStorage(gate);
     }
 
     return (
@@ -36,18 +47,27 @@ function App() {
             <EquippedToolContext value={tool}>
                 {activeGate && (
                     <>
+                        <GateTitle
+                            key={"title" + activeGate.gateType}
+                            activeGate={activeGate}
+                            saveGate={saveGate}
+                        />
                         <Area
                             key={activeGate.gateType}
                             activeGate={activeGate}
                             saveGate={saveGate}
                         />
                         <Toolbar setTool={setTool} />
+                        <GateLoaderMenu
+                            key={"menu" + activeGate.gateType}
+                            activeGate={activeGate}
+                            reloadGateType={(gateType?: string) => {
+                                loadCurrentGate(gateType);
+                            }}
+                        />
                     </>
                 )}
             </EquippedToolContext>
-            <GateLoader reloadGateType={(gateType?: string) => {
-                loadCurrentGate(gateType);
-            }} />
         </>
     );
 }

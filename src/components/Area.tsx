@@ -1,6 +1,6 @@
 import PanZoom, { API } from "@sasza/react-panzoom";
 import AreaElement from "./AreaElement";
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { EditorTool, Gate, InOut, Uid } from "../lib/types";
 import { EquippedToolContext } from "../App";
 import Connections from "./Connections";
@@ -31,8 +31,9 @@ export default function Area({
                 const updatedGate = { ...editableGate };
                 updatedGate.connections.push({
                     from: newConnections[0],
-                    to: newConnections[1],
+                    to: pinId,
                 });
+                console.log(updatedGate.connections.length);
                 setEditableGate(updatedGate);
                 setNewConnections([]);
             }
@@ -73,7 +74,7 @@ export default function Area({
                 height={2000}
                 width={2000}
                 selecting={tool == EditorTool.Select}
-                zoomMin={0.9}
+                zoomMin={0.5}
                 boundary={{
                     left: 0,
                 }}
@@ -87,6 +88,18 @@ export default function Area({
                     />
                 ))}
             </PanZoom>
+            {/* 
+            <InputOutputArea
+                type={"in"}
+                pins={activeGate.inputPins}
+                updateNewConnections={updateNewConnections}
+            />
+            <InputOutputArea
+                type={"out"}
+                pins={activeGate.outputPins}
+                updateNewConnections={updateNewConnections}
+            />
+            */}
             <Connections gate={editableGate} />
             {newConnections.length > 0 && (
                 <ArrowToCursor connections={newConnections} />

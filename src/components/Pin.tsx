@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import { InOut, Uid } from "../lib/types";
 
 export default function Pin({
@@ -9,9 +8,10 @@ export default function Pin({
     id: Uid;
     type: InOut;
     updateNewConnections: (type: InOut, pinId: Uid) => void;
-    }) {
-
+}) {
     return (
-        <div id={id} onClick={() => updateNewConnections(type, id)} />
+        <div
+            className="bg-blue-700 w-1.5 h-1.5 block rounded-full"
+            id={id} onClick={() => updateNewConnections(type, id)} />
     );
 }

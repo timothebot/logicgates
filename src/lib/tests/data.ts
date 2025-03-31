@@ -61,6 +61,7 @@ export const nandGate: Gate = {
         {
             id: "and-gate",
             gateType: "and",
+            elementType: "gate",
             inputPins: [
                 "and-in-a",
                 "and-in-b",
@@ -76,6 +77,7 @@ export const nandGate: Gate = {
         {
             id: "not-gate",
             gateType: "not",
+            elementType: "gate",
             inputPins: [
                 "not-in"
             ],
@@ -136,6 +138,7 @@ export const orGate: Gate = {
         {
             id: "not-a-gate",
             gateType: "not",
+            elementType: "gate",
             inputPins: ["not-a-in"],
             outputPins: ["not-a-out"],
             position: { x: 100, y: 100 }
@@ -143,6 +146,7 @@ export const orGate: Gate = {
         {
             id: "not-b-gate",
             gateType: "not",
+            elementType: "gate",
             inputPins: ["not-b-in"],
             outputPins: ["not-b-out"],
             position: { x: 100, y: 100 }
@@ -150,6 +154,7 @@ export const orGate: Gate = {
         {
             id: "nand-gate",
             gateType: "nand",
+            elementType: "gate",
             inputPins: ["nand-in-a", "nand-in-b"],
             outputPins: ["nand-out"],
             position: { x: 100, y: 100 }
@@ -210,8 +215,33 @@ export const xorGate: Gate = {
     ],
     virtualGates: [
         {
+            id: "input-a",
+            gateType: "",
+            elementType: "input",
+            inputPins: [],
+            outputPins: ["input-a"],
+            position: { x: 0, y: 100 }
+        },
+        {
+            id: "input-b",
+            gateType: "",
+            elementType: "input",
+            inputPins: [],
+            outputPins: ["input-b"],
+            position: { x: 0, y: 200 }
+        },
+        {
+            id: "output",
+            gateType: "",
+            elementType: "output",
+            inputPins: ["output"],
+            outputPins: [],
+            position: { x: 400, y: 200 }
+        },
+        {
             id: "not-a-gate",
             gateType: "not",
+            elementType: "gate",
             inputPins: ["not-a-in"],
             outputPins: ["not-a-out"],
             position: { x: 100, y: 100 }
@@ -219,6 +249,7 @@ export const xorGate: Gate = {
         {
             id: "not-b-gate",
             gateType: "not",
+            elementType: "gate",
             inputPins: ["not-b-in"],
             outputPins: ["not-b-out"],
             position: { x: 100, y: 200 }
@@ -226,6 +257,7 @@ export const xorGate: Gate = {
         {
             id: "and1-gate",
             gateType: "and",
+            elementType: "gate",
             inputPins: ["and1-in-a", "and1-in-b"],
             outputPins: ["and1-out"],
             position: { x: 200, y: 200 }
@@ -233,6 +265,7 @@ export const xorGate: Gate = {
         {
             id: "and2-gate",
             gateType: "and",
+            elementType: "gate",
             inputPins: ["and2-in-a", "and2-in-b"],
             outputPins: ["and2-out"],
             position: { x: 200, y: 100 }
@@ -240,6 +273,7 @@ export const xorGate: Gate = {
         {
             id: "or-gate",
             gateType: "or",
+            elementType: "gate",
             inputPins: ["or-in-a", "or-in-b"],
             outputPins: ["or-out"],
             position: { x: 300, y: 150 }

@@ -6,8 +6,9 @@ const GATE_DATA_PREFIX = "gate-";
 
 /**
  * Returns the current gate. Sets a new one if none found
+ * TODO: why did i add the or
  */
-export function getCurrentGateFromStorage(or: string): string {
+export function getCurrentGateFromStorage(or: string = "default"): string {
     let selectedGate = localStorage.getItem(ACTIVE_GATE_KEY);
     if (selectedGate === null || selectedGate === "") {
         selectedGate = or;
@@ -41,4 +42,8 @@ export function listStoredGateTypes(): string[] {
         }
     }
     return storedGateTypes;
+}
+
+export function removeGateFromStorage(gateType: string) {
+    localStorage.removeItem(GATE_DATA_PREFIX + gateType);
 }

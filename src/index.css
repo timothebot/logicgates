@@ -33,13 +33,6 @@ body {
         justify-content: center;
         top: 0;
         gap: 1px;
-        div {
-            background: blue;
-            width: 5px;
-            height: 5px;
-            border-radius: 100%;
-            display: block;
-        }
     }
     .input {
         left: 0;

@@ -14,6 +14,8 @@ export type Pin = {
     index: number;
 };
 
+export type ElementType = 'gate' | 'input' | 'output'; 
+
 /**
  * Represents a gate in the physical space
  */
@@ -24,6 +26,8 @@ export type VirtualElement = {
      * Links to the related gate logic in the gates lookup
      */
     gateType: string;
+
+    elementType: ElementType;
 
     inputPins: Uid[];
     outputPins: Uid[];

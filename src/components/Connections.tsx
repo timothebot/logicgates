@@ -36,10 +36,14 @@ export default function Connections({ gate }: { gate: Gate }) {
             {gate.connections
                 .filter((conn) => {
                     const pos = getPositionsFromConnection(gate, conn);
+                    if (gate.inputPins.includes(conn.from) || gate.outputPins.includes(conn.to)) {
+                        return true;
+                    }
+
                     if (
                         pos == undefined ||
                         (!isElementVisible(conn.from) &&
-                            !isElementVisible(conn.to))
+                        !isElementVisible(conn.to))
                     ) {
                         return false;
                     }
@@ -48,9 +52,10 @@ export default function Connections({ gate }: { gate: Gate }) {
                 .map((conn) => {
                     return (
                         <Xarrow
-                            key={conn.to}
+                            key={conn.from + conn.to}
                             headSize={4}
                             strokeWidth={2}
+                            path={"grid"}
                             startAnchor={"right"}
                             endAnchor={"left"}
                             start={conn.from}

@@ -65,11 +65,10 @@ export default function Toolbar({
                 );
             })}
             <button
-                        className="bg-slate-100 hover:bg-blue-100 cursor-pointer rounded p-1 shadow transition-colors"
-                        onClick={() => localStorage.clear()}
-                    >
-                        Clear Storage
-                    </button>
+                className="cursor-pointer rounded bg-slate-100 p-1 shadow transition-colors hover:bg-blue-100"
+                onClick={() => localStorage.clear()}>
+                Clear Storage
+            </button>
         </div>
     );
 }
