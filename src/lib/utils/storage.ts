@@ -1,6 +1,7 @@
 import { AND_GATE, NOT_GATE } from "../default_gates";
 import { createGate } from "../gates";
 import { Gate, SimulationManager } from "../types";
+import logger from "./logger";
 
 const ACTIVE_GATE_KEY = "active-gate";
 const GATE_DATA_PREFIX = "gate-";
@@ -23,6 +24,7 @@ export function getGateFromStorage(gateType: string): Gate {
     if (storedGate !== null) {
         return JSON.parse(storedGate) as Gate;
     }
+    logger.warn("Couldn't find gate of type '" + GATE_DATA_PREFIX + gateType + "', creating it.");
     return createGate(gateType);
 }
 

@@ -12,16 +12,16 @@ export default function AreaElement({
     element: VirtualElement;
     updateNewConnections: (type: InOut, pinId: Uid) => void;
     toggleInput: (inputId: Uid) => void;
-    }) {
+}) {
     const activeSimulation = useContext(ActiveSimulationContext);
     const [isActive, setIsActive] = useState(false);
 
     function handleClick(_: any) {
         if (element.elementType == "input") {
-            toggleInput(element.id);
+            toggleInput(element.outputPins[0]);
         }
     }
-    
+
     function getInnerContent(): ReactNode {
         switch (element.elementType) {
             case "gate":
@@ -34,14 +34,18 @@ export default function AreaElement({
     }
 
     useEffect(() => {
-        setIsActive(activeSimulation.activeElements.includes(element.id) ||
-            activeSimulation.activeInputs.includes(element.id));
-    }, [activeSimulation])
+        setIsActive(
+            activeSimulation.activeElements.includes(element.id) ||
+                activeSimulation.activeInputs.includes(element.id),
+        );
+    }, [activeSimulation]);
 
     return (
         <Element id={element.id} x={element.position.x} y={element.position.y}>
             <div
-                className={"element " + (isActive ? "active" : "")} onDoubleClick={handleClick}>
+                className={"element " + (isActive ? "active" : "")}
+                onDoubleClick={handleClick}
+            >
                 {element.inputPins.length > 0 && (
                     <div className="input">
                         {element.inputPins.map((pin) => (

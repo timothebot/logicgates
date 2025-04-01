@@ -9,7 +9,7 @@ type ElementOptions = {
     label: string;
 };
 
-export default function ElementSelector({
+export default function AddElementSelector({
     position,
     addElement,
 }: {
@@ -48,7 +48,7 @@ export default function ElementSelector({
         const gateId = uuidv4();
 
         if (options.elementType == "gate") {
-            const targetGate = getGateFromStorage(options.elementType);
+            const targetGate = getGateFromStorage(options.gateType);
             targetGate.inputPins.forEach((pin) => {
                 const uid = uuidv4();
                 inputPins.push(uid);
@@ -73,7 +73,7 @@ export default function ElementSelector({
             outputPins = options.elementType == "output" ? [] : [uid];
             pins.push({
                 id: uid,
-                gateId: gateId,
+                gateId: options.elementType == "input" ? "in" : "out",
                 index: 0
             });
         }

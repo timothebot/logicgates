@@ -1,5 +1,6 @@
 import { getPositionsFromConnection } from "../lib/gates";
 import { Gate } from "../lib/types";
+import logger from "../lib/utils/logger";
 import ConnectionArrow from "./ConnectionArrow";
 
 function isElementVisible(id: string): boolean {
@@ -32,7 +33,7 @@ export default function Connections({ gate }: { gate: Gate; }) {
                         (!isElementVisible(conn.from) &&
                         !isElementVisible(conn.to))
                     ) {
-                        console.log(conn, pos)
+                        logger.error(conn, pos)
                         return false;
                     }
                     return true;

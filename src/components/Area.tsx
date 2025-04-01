@@ -1,13 +1,23 @@
 import PanZoom, { API } from "@sasza/react-panzoom";
 import AreaElement from "./AreaElement";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { ActiveSimulation, EditorTool, Gate, InOut, Uid, VirtualElement, Position, Pin } from "../lib/types";
+import {
+    ActiveSimulation,
+    EditorTool,
+    Gate,
+    InOut,
+    Uid,
+    VirtualElement,
+    Position,
+    Pin,
+} from "../lib/types";
 import { EquippedToolContext } from "../App";
 import Connections from "./Connections";
 import ArrowToCursor from "./ArrowToCursor";
 import { getSimulationManagerFromStorage } from "../lib/utils/storage";
 import { simulateGate } from "../lib/gates";
-import ElementSelector from "./ElementSelector";
+import AddElementSelector from "./AddElementSelector";
+import logger from "../lib/utils/logger";
 
 const SAVE_INTERVAL_MS = 1000;
 
@@ -33,7 +43,8 @@ export default function Area({
         activeElements: [],
         activeInputs: [],
     });
-    const [elementSelectorPosition, setElementSelectorPosition] = useState<Position>({x: 0, y: 0});
+    const [elementSelectorPosition, setElementSelectorPosition] =
+        useState<Position>({ x: 0, y: 0 });
 
     function updateNewConnections(type: InOut, pinId: Uid) {
         if (type == "in") {
@@ -61,18 +72,19 @@ export default function Area({
         // no idea why
         setTimeout(() => {
             runSimulation();
-        }, 10)
-
+        }, 10);
     }, []);
 
     function runSimulation(simulation?: ActiveSimulation) {
         const currentSimulation = simulation || activeSimulation;
+        logger.log(currentSimulation)
         const newActiveSimulation: ActiveSimulation = {
             activeElements: [],
-            activeInputs: [...currentSimulation.activeInputs]
-         };
+            activeInputs: [...currentSimulation.activeInputs],
+        };
 
         const inputs = activeGate.inputPins.map((pinId) => {
+            logger.log(pinId)
             return newActiveSimulation.activeInputs.includes(pinId);
         });
         const manager = getSimulationManagerFromStorage();
@@ -105,7 +117,7 @@ export default function Area({
         } else {
             newActiveSimulation.activeInputs.push(inputId);
         }
-        runSimulation(newActiveSimulation)
+        runSimulation(newActiveSimulation);
     }
 
     /**
@@ -136,8 +148,8 @@ export default function Area({
         if (props.e.shiftKey) {
             setElementSelectorPosition({
                 x: props.e.clientX,
-                y: props.e.clientY
-            })
+                y: props.e.clientY,
+            });
         }
     }
 
@@ -145,16 +157,16 @@ export default function Area({
         const updatedGate = { ...editableGate };
         updatedGate.virtualGates.push(element);
         if (element.elementType == "input") {
-            updatedGate.inputPins.push(element.id)
             pins[0].index = updatedGate.inputPins.length;
+            updatedGate.inputPins.push(element.outputPins[0]);
         }
         if (element.elementType == "output") {
-            updatedGate.outputPins.push(element.id)
             pins[0].index = updatedGate.outputPins.length;
+            updatedGate.outputPins.push(element.inputPins[0]);
         }
-        updatedGate.virtualPins.push(...pins)
+        updatedGate.virtualPins.push(...pins);
         setEditableGate(updatedGate);
-        setElementSelectorPosition({x: 0, y: 0})
+        setElementSelectorPosition({ x: 0, y: 0 });
     }
 
     return (
@@ -185,7 +197,10 @@ export default function Area({
                 {newConnections.length > 0 && (
                     <ArrowToCursor connections={newConnections} />
                 )}
-                <ElementSelector position={elementSelectorPosition} addElement={addElement} />
+                <AddElementSelector
+                    position={elementSelectorPosition}
+                    addElement={addElement}
+                />
             </ActiveSimulationContext>
         </div>
     );
