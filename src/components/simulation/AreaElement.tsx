@@ -1,15 +1,18 @@
-import { Element } from "@sasza/react-panzoom";
+import {
+    ActiveSimulationContext,
+    SelectedElementsContext,
+} from "@components/Area";
+import Pin from "@components/simulation/Pin";
 import { GateAction, PerformGateAction, VirtualElement } from "@lib/types";
-import Pin from "@components/Pin";
+import { Element } from "@sasza/react-panzoom";
 import { MouseEvent, ReactNode, useContext, useEffect, useState } from "react";
-import { ActiveSimulationContext, SelectedElementsContext } from "@components/Area";
 
 export default function AreaElement({
     element,
-    performGateAction
+    performGateAction,
 }: {
     element: VirtualElement;
-    performGateAction: PerformGateAction
+    performGateAction: PerformGateAction;
 }) {
     const activeSimulation = useContext(ActiveSimulationContext);
     const selectedElements = useContext(SelectedElementsContext);
@@ -20,14 +23,14 @@ export default function AreaElement({
         performGateAction({
             type: GateAction.SelectElement,
             element: element,
-            event: event
-        })
+            event: event,
+        });
     }
     function handleDoubleClick(_: any) {
         if (element.elementType == "input") {
             performGateAction({
                 type: GateAction.ToggleInput,
-                inputId: element.outputPins[0]
+                inputId: element.outputPins[0],
             });
         }
     }
@@ -53,7 +56,13 @@ export default function AreaElement({
     return (
         <Element id={element.id} x={element.position.x} y={element.position.y}>
             <div
-                className={"element" + (isActive ? " active" : "") + (selectedElements.selectedElements.includes(element.id) ? " selected" : "")}
+                className={
+                    "element" +
+                    (isActive ? " active" : "") +
+                    (selectedElements.selectedElements.includes(element.id)
+                        ? " selected"
+                        : "")
+                }
                 onClick={handleClick}
                 onDoubleClick={handleDoubleClick}
             >

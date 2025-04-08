@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Gate } from "../lib/types";
+import { Gate } from "@lib/types";
 
 export default function GateTitle({
     saveGate,

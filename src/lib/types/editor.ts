@@ -1,4 +1,5 @@
 import { Gate, InOut, Pin, Uid, VirtualElement } from "@lib/types";
+import { MouseEvent } from "react";
 
 export type SimulationManager = {
     gatesLookup: Gate[];

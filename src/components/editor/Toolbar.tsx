@@ -1,6 +1,6 @@
 import { ReactNode, useContext, useEffect } from "react";
-import { EditorTool } from "../lib/types";
-import { EquippedToolContext } from "../App";
+import { EditorTool } from "@lib/types";
+import { EquippedToolContext } from "@/App";
 import { LuSquareDashedMousePointer, LuMousePointer2 } from "react-icons/lu";
 
 type OptionButton = {
@@ -66,7 +66,8 @@ export default function Toolbar({
             })}
             <button
                 className="cursor-pointer rounded bg-slate-100 p-1 shadow transition-colors hover:bg-blue-100"
-                onClick={() => localStorage.clear()}>
+                onClick={() => localStorage.clear()}
+            >
                 Clear Storage
             </button>
         </div>

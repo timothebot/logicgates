@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Position } from "../lib/types";
+import { Position } from "@lib/types";
 
 export default function InvisibleCursor() {
     const [mousePos, setMousePos] = useState<Position>({ x: 0, y: 0 });
@@ -22,7 +22,7 @@ export default function InvisibleCursor() {
                 top: mousePos.y,
                 left: mousePos.x,
             }}
-            className="pointer-events-none select-none absolute"
+            className="pointer-events-none absolute select-none"
         />
     );
 }

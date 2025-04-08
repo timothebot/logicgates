@@ -1,7 +1,7 @@
 import Xarrow, { useXarrow } from "react-xarrows";
-import { Uid } from "../lib/types";
+import { Uid } from "@lib/types";
 import { useEffect } from "react";
-import InvisibleCursor from "./InvisibleCursor";
+import InvisibleCursor from "@components/editor/InvisibleCursor";
 
 export default function ArrowToCursor({ connections }: { connections: Uid[] }) {
     const updateXarrow = useXarrow();

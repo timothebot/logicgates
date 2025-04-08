@@ -1,7 +1,7 @@
-import { getPositionsFromConnection } from "../lib/gates";
-import { Gate } from "../lib/types";
-import logger from "../lib/utils/logger";
-import ConnectionArrow from "./ConnectionArrow";
+import { getPositionsFromConnection } from "@lib/gates";
+import { Gate } from "@lib/types";
+import logger from "@lib/utils/logger";
+import ConnectionArrow from "@components/simulation/ConnectionArrow";
 
 function isElementVisible(id: string): boolean {
     const rect = document.getElementById(id)?.getBoundingClientRect();

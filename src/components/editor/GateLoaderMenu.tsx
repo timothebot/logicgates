@@ -4,10 +4,10 @@ import {
     removeGateFromStorage,
     setCurrentGateInStorage,
     writeGateToStorage,
-} from "../lib/utils/storage";
+} from "@lib/utils/storage";
 import { LuMenu, LuTrash2 } from "react-icons/lu";
-import { Gate } from "../lib/types";
-import { nandGate } from "../lib/tests/data";
+import { Gate } from "@lib/types";
+import { nandGate } from "@lib/tests/data";
 
 export default function GateLoaderMenu({
     reloadGateType,
@@ -96,7 +96,7 @@ export default function GateLoaderMenu({
                     })}
                     <div className="flex w-full">
                         <input
-                            className="border-2 border-blue-400 rounded mr-2"
+                            className="mr-2 rounded border-2 border-blue-400"
                             value={newGateName}
                             onChange={(e) => setNewGateName(e.target.value)}
                         ></input>

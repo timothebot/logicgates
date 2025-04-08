@@ -1,8 +1,8 @@
 import { createContext, useEffect, useState } from "react";
 import Area from "./components/Area";
-import Toolbar from "./components/Toolbar";
+import Toolbar from "./components/editor/Toolbar";
 import { EditorTool, Gate } from "./lib/types";
-import GateLoaderMenu from "./components/GateLoaderMenu";
+import GateLoaderMenu from "./components/editor/GateLoaderMenu";
 import {
     getCurrentGateFromStorage,
     getGateFromStorage,
@@ -10,7 +10,7 @@ import {
     setCurrentGateInStorage,
     writeGateToStorage,
 } from "./lib/utils/storage";
-import GateTitle from "./components/GateTitle";
+import GateTitle from "./components/editor/GateTitle";
 
 export const EquippedToolContext = createContext<EditorTool>(
     EditorTool.Default,

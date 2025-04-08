@@ -1,7 +1,7 @@
 import Xarrow, { useXarrow } from "react-xarrows";
-import { Connection } from "../lib/types";
+import { Connection } from "@lib/types";
 import { useContext, useEffect, useState } from "react";
-import { ActiveSimulationContext } from "./Area";
+import { ActiveSimulationContext } from "@components/Area";
 
 const INACTIVE_COLOR = "oklch(0.208 0.042 265.755)";
 const ACTIVE_COLOR = "oklch(0.715 0.143 215.221)";

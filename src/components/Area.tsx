@@ -1,7 +1,7 @@
-import AddElementSelector from "@components/AddElementSelector";
-import AreaElement from "@components/AreaElement";
-import ArrowToCursor from "@components/ArrowToCursor";
-import Connections from "@components/Connections";
+import AddElementSelector from "@components/editor/AddElementSelector";
+import AreaElement from "@components/simulation/AreaElement";
+import ArrowToCursor from "@components/editor/ArrowToCursor";
+import Connections from "@components/simulation/Connections";
 import { simulateGate } from "@lib/simulation";
 import {
     ActiveSimulation,
@@ -14,10 +14,10 @@ import {
     Uid,
 } from "@lib/types";
 import logger from "@lib/utils/logger";
+import { EquippedToolContext } from "@/App";
 import { getSimulationManagerFromStorage } from "@lib/utils/storage";
 import PanZoom, { API } from "@sasza/react-panzoom";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { EquippedToolContext } from "@/App";
 
 const SAVE_INTERVAL_MS = 1000;
 

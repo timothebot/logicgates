@@ -1,5 +1,4 @@
-import { InOut, Uid } from "../lib/types";
-import { GateAction, PerformGateAction } from "@lib/types";
+import { InOut, Uid, GateAction, PerformGateAction } from "@lib/types";
 
 export default function Pin({
     id,
