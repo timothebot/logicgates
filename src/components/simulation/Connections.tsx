@@ -1,5 +1,5 @@
 import { getPositionsFromConnection } from "@lib/gates";
-import { Gate } from "@lib/types";
+import { Gate, PerformGateAction } from "@lib/types";
 import logger from "@lib/utils/logger";
 import ConnectionArrow from "@components/simulation/ConnectionArrow";
 
@@ -18,28 +18,43 @@ function isElementVisible(id: string): boolean {
     );
 }
 
-export default function Connections({ gate }: { gate: Gate; }) {
+export default function Connections({
+    gate,
+    performGateAction,
+}: {
+    gate: Gate;
+    performGateAction: PerformGateAction;
+}) {
     return (
         <>
             {gate.connections
                 .filter((conn) => {
                     const pos = getPositionsFromConnection(gate, conn);
-                    if (gate.inputPins.includes(conn.from) || gate.outputPins.includes(conn.to)) {
+                    if (
+                        gate.inputPins.includes(conn.from) ||
+                        gate.outputPins.includes(conn.to)
+                    ) {
                         return true;
                     }
 
                     if (
                         pos == undefined ||
                         (!isElementVisible(conn.from) &&
-                        !isElementVisible(conn.to))
+                            !isElementVisible(conn.to))
                     ) {
-                        logger.error(conn, pos)
+                        logger.error(conn, pos);
                         return false;
                     }
                     return true;
                 })
                 .map((conn) => {
-                    return <ConnectionArrow key={conn.from + conn.to} conn={conn} />
+                    return (
+                        <ConnectionArrow
+                            performGateAction={performGateAction}
+                            key={conn.from + conn.to}
+                            conn={conn}
+                        />
+                    );
                 })}
         </>
     );

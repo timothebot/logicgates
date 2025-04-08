@@ -1,4 +1,4 @@
-import { InOut, Pin, Uid, VirtualElement } from "@lib/types";
+import { Connection, InOut, Pin, Uid, VirtualElement } from "@lib/types";
 import { MouseEvent } from "react";
 
 export enum GateAction {
@@ -24,12 +24,16 @@ export type AddElementAction = ElementAction & {
     pins: Pin[];
 };
 
-export type DeleteElementAction = ElementAction & {
+export type DeleteElementAction = {
     type: GateAction.DeleteElement;
+    element?: VirtualElement;
+    connection?: Connection;
 };
 
-export type SelectElementAction = ElementAction & {
+export type SelectElementAction = {
     type: GateAction.SelectElement;
+    element?: VirtualElement;
+    connection?: Connection;
     event?: MouseEvent;
 };
 

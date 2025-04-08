@@ -44,6 +44,13 @@ export default function GateLoaderMenu({
         writeGateToStorage(newGate);
     }
 
+    function createNewGate() {
+        if (newGateName.length > 1) {
+            setCurrentGateInStorage(newGateName);
+            reloadGateType(newGateName);
+        }
+    }
+
     useEffect(() => {
         document.addEventListener("keydown", onKeyDown);
         return () => {
@@ -100,7 +107,11 @@ export default function GateLoaderMenu({
                             value={newGateName}
                             onChange={(e) => setNewGateName(e.target.value)}
                         ></input>
-                        <button className="cursor-pointer rounded bg-blue-500 p-2">
+                        <button
+                            className="cursor-pointer rounded bg-blue-500 p-2 disabled:bg-blue-100"
+                            disabled={newGateName.length < 2}
+                            onClick={createNewGate}
+                        >
                             Create
                         </button>
                     </div>

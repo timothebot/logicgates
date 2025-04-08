@@ -6,6 +6,7 @@ import { simulateGate } from "@lib/simulation";
 import {
     ActiveSimulation,
     AllowedGateActions,
+    Connection,
     EditorTool,
     Gate,
     GateAction,
@@ -15,7 +16,11 @@ import {
 } from "@lib/types";
 import logger from "@lib/utils/logger";
 import { EquippedToolContext } from "@/App";
-import { createHistoryEntry, getHistoryEntry, getSimulationManagerFromStorage } from "@lib/utils/storage";
+import {
+    createHistoryEntry,
+    getHistoryEntry,
+    getSimulationManagerFromStorage,
+} from "@lib/utils/storage";
 import PanZoom, { API } from "@sasza/react-panzoom";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
@@ -28,6 +33,7 @@ export const ActiveSimulationContext = createContext<ActiveSimulation>({
 
 export const SelectedElementsContext = createContext<SelectedElements>({
     selectedElements: [],
+    selectedConnections: [],
 });
 
 export default function Area({
@@ -49,6 +55,7 @@ export default function Area({
     });
     const [selectedElements, setSelectedElements] = useState<SelectedElements>({
         selectedElements: [],
+        selectedConnections: [],
     });
     const [elementSelectorPosition, setElementSelectorPosition] =
         useState<Position>({ x: 0, y: 0 });
@@ -131,41 +138,50 @@ export default function Area({
             case GateAction.DeleteElement: {
                 const updatedGate = { ...editableGate };
 
-                // Remove Input/Output pins from the gate object
-                if (data.element.elementType == "input") {
-                    updatedGate.inputPins = updatedGate.inputPins.filter(
+                if (data.element) {
+                    const element = data.element;
+                    // Remove Input/Output pins from the gate object
+                    if (data.element.elementType == "input") {
+                        updatedGate.inputPins = updatedGate.inputPins.filter(
+                            (pin) => {
+                                return !element.outputPins.includes(pin);
+                            },
+                        );
+                    }
+                    if (data.element.elementType == "output") {
+                        updatedGate.outputPins = updatedGate.outputPins.filter(
+                            (pin) => {
+                                return !element.inputPins.includes(pin);
+                            },
+                        );
+                    }
+    
+                    // Remove connections, pins and the element itself
+                    updatedGate.connections = updatedGate.connections.filter(
+                        (conn) => {
+                            return !(
+                                element.inputPins.includes(conn.to) ||
+                                element.outputPins.includes(conn.from)
+                            );
+                        },
+                    );
+                    updatedGate.virtualPins = updatedGate.virtualPins.filter(
                         (pin) => {
-                            return !data.element.outputPins.includes(pin);
+                            return pin.gateId != element.id;
+                        },
+                    );
+                    updatedGate.virtualGates = updatedGate.virtualGates.filter(
+                        (vGate) => {
+                            return vGate.id != element.id;
                         },
                     );
                 }
-                if (data.element.elementType == "output") {
-                    updatedGate.outputPins = updatedGate.outputPins.filter(
-                        (pin) => {
-                            return !data.element.inputPins.includes(pin);
-                        },
-                    );
+                if (data.connection) {
+                    updatedGate.connections = updatedGate.connections.filter(conn => {
+                        return conn != data.connection;
+                    })
                 }
 
-                // Remove connections, pins and the element itself
-                updatedGate.connections = updatedGate.connections.filter(
-                    (conn) => {
-                        return !(
-                            data.element.inputPins.includes(conn.to) ||
-                            data.element.outputPins.includes(conn.from)
-                        );
-                    },
-                );
-                updatedGate.virtualPins = updatedGate.virtualPins.filter(
-                    (pin) => {
-                        return pin.gateId != data.element.id;
-                    },
-                );
-                updatedGate.virtualGates = updatedGate.virtualGates.filter(
-                    (vGate) => {
-                        return vGate.id != data.element.id;
-                    },
-                );
                 setEditableGate(updatedGate);
                 break;
             }
@@ -174,28 +190,53 @@ export default function Area({
              * Select element, handle shift etc.
              */
             case GateAction.SelectElement: {
-                const unselect = selectedElements.selectedElements.includes(
-                    data.element.id,
-                );
                 let newSelectedElements: Uid[] = [];
-                if (data.event && data.event.shiftKey) {
+                let newSelectedConnections: Connection[] = [];
+
+                const shiftKeyPressed = data.event && data.event.shiftKey;
+                if (shiftKeyPressed) {
                     newSelectedElements = selectedElements.selectedElements;
-                    if (unselect) {
+                    newSelectedConnections =
+                        selectedElements.selectedConnections;
+                }
+                if (data.element) {
+                    const unselect = selectedElements.selectedElements.includes(
+                        data.element.id,
+                    );
+                    if (shiftKeyPressed && unselect) {
                         newSelectedElements = newSelectedElements.filter(
-                            (id) => id != data.element.id,
+                            (id) => id != data.element?.id,
                         );
                     }
+                    if (!unselect) {
+                        newSelectedElements.push(data.element.id);
+                    }
                 }
-                if (!unselect) {
-                    newSelectedElements.push(data.element.id);
+                if (data.connection) {
+                    const unselect =
+                        selectedElements.selectedConnections.includes(
+                            data.connection,
+                        );
+                    if (shiftKeyPressed && unselect) {
+                        newSelectedConnections = newSelectedConnections.filter(
+                            (conn) => conn != data.connection,
+                        );
+                    }
+                    if (!unselect) {
+                        newSelectedConnections.push(data.connection);
+                    }
                 }
-                setSelectedElements({ selectedElements: newSelectedElements });
+                setSelectedElements({
+                    selectedElements: newSelectedElements,
+                    selectedConnections: newSelectedConnections,
+                });
                 break;
             }
 
             case GateAction.ResetSelectedElements: {
                 setSelectedElements({
                     selectedElements: [],
+                    selectedConnections: [],
                 });
                 break;
             }
@@ -204,7 +245,7 @@ export default function Area({
 
     useEffect(() => {
         save();
-    }, [editableGate])
+    }, [editableGate]);
 
     function handleClick({ e }: { e: MouseEvent }) {
         if (e.shiftKey) {
@@ -248,7 +289,7 @@ export default function Area({
     }
 
     function save(gate?: Gate, createHistory: boolean = true) {
-        const updatedGate = { ...gate || editableGate };
+        const updatedGate = { ...(gate || editableGate) };
         Object.values(panZoomRef.current?.getElements() || {}).forEach(
             (element) => {
                 const gate = updatedGate.virtualGates.find(
@@ -292,6 +333,12 @@ export default function Area({
                         });
                     }
                 });
+                selectedElements.selectedConnections.forEach(conn => {
+                    performGateAction({
+                        type: GateAction.DeleteElement,
+                        connection: conn
+                    })
+                })
             }
 
             if (event.key == "a") {
@@ -300,9 +347,9 @@ export default function Area({
 
             if (event.key == "z" && event.metaKey) {
                 const history = getHistoryEntry(editableGate);
-                logger.log("History: ", history)
+                logger.log("History: ", history);
                 if (history) {
-                    setEditableGate(history)
+                    setEditableGate(history);
                     // save(history, false)
                 }
             }
@@ -356,11 +403,15 @@ export default function Area({
                             />
                         ))}
                     </PanZoom>
-                    <Connections gate={editableGate} />
+                    <Connections
+                        performGateAction={performGateAction}
+                        gate={editableGate}
+                    />
                     {newConnections.length > 0 && (
                         <ArrowToCursor connections={newConnections} />
                     )}
                     <AddElementSelector
+                        activeGate={activeGate}
                         position={elementSelectorPosition}
                         performGateAction={performGateAction}
                     />

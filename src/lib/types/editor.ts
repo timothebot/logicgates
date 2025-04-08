@@ -1,4 +1,4 @@
-import { Gate, Uid } from "@lib/types";
+import { Connection, Gate, Uid } from "@lib/types";
 
 export type SimulationManager = {
     gatesLookup: Gate[];
@@ -16,4 +16,5 @@ export type ActiveSimulation = {
 
 export type SelectedElements = {
     selectedElements: Uid[];
+    selectedConnections: Connection[];
 }

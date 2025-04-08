@@ -1,5 +1,7 @@
+import { AND_GATE, NOT_GATE } from "@lib/default_gates";
 import {
     ElementType,
+    Gate,
     GateAction,
     PerformGateAction,
     Pin,
@@ -17,9 +19,11 @@ type ElementOptions = {
 };
 
 export default function AddElementSelector({
+    activeGate,
     position,
     performGateAction,
 }: {
+    activeGate: Gate,
     position: Position;
     performGateAction: PerformGateAction;
 }) {
@@ -44,6 +48,16 @@ export default function AddElementSelector({
                 elementType: "output",
                 label: "Output",
             },
+            {
+                gateType: "not",
+                elementType: "gate",
+                label: "NOT",
+            },
+            {
+                gateType: "and",
+                elementType: "gate",
+                label: "AND"
+            }
         );
         setElements(elements);
     }, [position]);
@@ -55,7 +69,14 @@ export default function AddElementSelector({
         const gateId = uuidv4();
 
         if (options.elementType == "gate") {
-            const targetGate = getGateFromStorage(options.gateType);
+            let targetGate;
+            if (options.gateType == "and") {
+                targetGate = AND_GATE;
+            } else if (options.gateType == "not") {
+                targetGate = NOT_GATE;
+            } else {
+                targetGate = getGateFromStorage(options.gateType);
+            }
             targetGate.inputPins.forEach((pin) => {
                 const uid = uuidv4();
                 inputPins.push(uid);
@@ -106,7 +127,7 @@ export default function AddElementSelector({
     return (
         <div
             className={
-                "absolute grid gap-x-2 rounded border-1 border-slate-100 bg-white p-2.5 shadow " +
+                "absolute grid gap-x-2 rounded border-1 scroll-auto border-slate-100 bg-white p-2.5 shadow " +
                 (position.x == 0 ? "opacity-0" : "")
             }
             style={{
@@ -117,6 +138,7 @@ export default function AddElementSelector({
             {elements.map((el) => {
                 return (
                     <button
+                        className="shadow rounded p-2 text-left hover:bg-blue-300 cursor-pointer"
                         key={"element-" + el.label}
                         onClick={() => handleClick(el)}
                     >
