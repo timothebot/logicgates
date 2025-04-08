@@ -5,6 +5,7 @@ import logger from "./logger";
 
 const ACTIVE_GATE_KEY = "active-gate";
 const GATE_DATA_PREFIX = "gate-";
+const HISTORY_KEY = "logicgates-history";
 
 /**
  * Returns the current gate. Sets a new one if none found
@@ -57,4 +58,47 @@ export function getSimulationManagerFromStorage(): SimulationManager {
     return {
         gatesLookup: allGates
     }
+}
+
+type HistoryStorage = {
+    gateType: string;
+    history: Gate[];
+}
+
+function getHistory(gateType: string) {
+    const historyRaw = localStorage.getItem(HISTORY_KEY);
+    let history: HistoryStorage | undefined = undefined;
+    if (historyRaw) {
+        history = JSON.parse(historyRaw);
+    }
+    if (!historyRaw || !history || history.gateType != gateType) {
+        history = {
+            gateType: gateType,
+            history: []
+        }
+    }
+    return history;
+}
+
+function saveHistory(history: HistoryStorage) {
+    if (history.history.length > 10) {
+        history.history.shift();
+    }
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+export function createHistoryEntry(gate: Gate) {
+    const history = getHistory(gate.gateType);
+    history.history.push(gate);
+    saveHistory(history);
+}
+
+export function getHistoryEntry(gate: Gate): Gate | undefined {
+    const history = getHistory(gate.gateType);
+    if (history.history.length > 2) {
+        history.history.pop();
+    }
+    const item = history.history.pop();
+    saveHistory(history);
+    return item;
 }

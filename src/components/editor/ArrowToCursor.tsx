@@ -20,6 +20,9 @@ export default function ArrowToCursor({ connections }: { connections: Uid[] }) {
         <>
             <InvisibleCursor />
             <Xarrow
+                divContainerStyle={{
+                    pointerEvents: "none"
+                }}
                 headSize={4}
                 strokeWidth={2}
                 startAnchor={"right"}
