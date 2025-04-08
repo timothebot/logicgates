@@ -1,8 +1,14 @@
+import {
+    ElementType,
+    GateAction,
+    PerformGateAction,
+    Pin,
+    Position,
+    Uid,
+} from "@lib/types";
+import { getGateFromStorage, listStoredGateTypes } from "@lib/utils/storage";
 import { useEffect, useState } from "react";
-import { ElementType, Pin, Position, Uid } from "../lib/types";
-import { getGateFromStorage, listStoredGateTypes } from "../lib/utils/storage";
 import { v4 as uuidv4 } from "uuid";
-import { GateAction, PerformGateAction } from "./Area";
 
 type ElementOptions = {
     gateType: string;

@@ -1,8 +1,8 @@
 import { Element } from "@sasza/react-panzoom";
-import { VirtualElement } from "../lib/types";
-import Pin from "./Pin";
+import { GateAction, PerformGateAction, VirtualElement } from "@lib/types";
+import Pin from "@components/Pin";
 import { MouseEvent, ReactNode, useContext, useEffect, useState } from "react";
-import { ActiveSimulationContext, GateAction, PerformGateAction, SelectedElementsContext } from "./Area";
+import { ActiveSimulationContext, SelectedElementsContext } from "@components/Area";
 
 export default function AreaElement({
     element,

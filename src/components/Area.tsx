@@ -1,24 +1,23 @@
-import PanZoom, { API } from "@sasza/react-panzoom";
-import AreaElement from "./AreaElement";
-import { createContext, MouseEvent, useContext, useEffect, useRef, useState } from "react";
+import AddElementSelector from "@components/AddElementSelector";
+import AreaElement from "@components/AreaElement";
+import ArrowToCursor from "@components/ArrowToCursor";
+import Connections from "@components/Connections";
+import { simulateGate } from "@lib/simulation";
 import {
     ActiveSimulation,
+    AllowedGateActions,
     EditorTool,
     Gate,
-    InOut,
-    Uid,
-    VirtualElement,
+    GateAction,
     Position,
-    Pin,
     SelectedElements,
-} from "../lib/types";
-import { EquippedToolContext } from "../App";
-import Connections from "./Connections";
-import ArrowToCursor from "./ArrowToCursor";
-import { getSimulationManagerFromStorage } from "../lib/utils/storage";
-import { simulateGate } from "../lib/simulation";
-import AddElementSelector from "./AddElementSelector";
-import logger from "../lib/utils/logger";
+    Uid,
+} from "@lib/types";
+import logger from "@lib/utils/logger";
+import { getSimulationManagerFromStorage } from "@lib/utils/storage";
+import PanZoom, { API } from "@sasza/react-panzoom";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { EquippedToolContext } from "@/App";
 
 const SAVE_INTERVAL_MS = 1000;
 
@@ -30,58 +29,6 @@ export const ActiveSimulationContext = createContext<ActiveSimulation>({
 export const SelectedElementsContext = createContext<SelectedElements>({
     selectedElements: [],
 });
-
-export enum GateAction {
-    ToggleInput,
-    AddElement,
-    AddConnection,
-    DeleteElement,
-    SelectElement,
-    ResetSelectedElements
-}
-
-type ToggleInputAction = {
-    type: GateAction.ToggleInput;
-    inputId: Uid;
-};
-
-type ElementAction = {
-    element: VirtualElement;
-};
-
-type AddElementAction = ElementAction & {
-    type: GateAction.AddElement;
-    pins: Pin[];
-};
-
-type DeleteElementAction = ElementAction & {
-    type: GateAction.DeleteElement;
-};
-
-type SelectElementAction = ElementAction & {
-    type: GateAction.SelectElement;
-    event?: MouseEvent;
-};
-
-type AddConnectionAction = {
-    type: GateAction.AddConnection;
-    connectionType: InOut;
-    pinId: Uid;
-};
-
-type ResetSelectedElementsAction = {
-    type: GateAction.ResetSelectedElements;
-};
-
-type AllowedGateActions =
-    | ToggleInputAction
-    | AddElementAction
-    | DeleteElementAction
-    | SelectElementAction
-    | ResetSelectedElementsAction
-    | AddConnectionAction;
-
-export type PerformGateAction = (data: AllowedGateActions) => void;
 
 export default function Area({
     activeGate,
@@ -100,10 +47,9 @@ export default function Area({
         activeElements: [],
         activeInputs: [],
     });
-    const [selectedElements, setSelectedElements] =
-        useState<SelectedElements>({
-            selectedElements: [],
-        });
+    const [selectedElements, setSelectedElements] = useState<SelectedElements>({
+        selectedElements: [],
+    });
     const [elementSelectorPosition, setElementSelectorPosition] =
         useState<Position>({ x: 0, y: 0 });
 
@@ -179,17 +125,21 @@ export default function Area({
             case GateAction.DeleteElement:
                 // TODO
                 break;
-            
+
             /**
              * Select element, handle shift etc.
              */
             case GateAction.SelectElement:
-                const unselect = selectedElements.selectedElements.includes(data.element.id);
+                const unselect = selectedElements.selectedElements.includes(
+                    data.element.id,
+                );
                 let newSelectedElements: Uid[] = [];
                 if (data.event && data.event.shiftKey) {
                     newSelectedElements = selectedElements.selectedElements;
                     if (unselect) {
-                        newSelectedElements = newSelectedElements.filter(id => id != data.element.id);
+                        newSelectedElements = newSelectedElements.filter(
+                            (id) => id != data.element.id,
+                        );
                     }
                 }
                 if (!unselect) {
@@ -200,7 +150,7 @@ export default function Area({
 
             case GateAction.ResetSelectedElements:
                 setSelectedElements({
-                    selectedElements: []
+                    selectedElements: [],
                 });
                 break;
         }
@@ -208,7 +158,7 @@ export default function Area({
 
     function handleClick(props: any) {
         performGateAction({
-            type: GateAction.ResetSelectedElements
+            type: GateAction.ResetSelectedElements,
         });
         if (props.e.shiftKey) {
             // activate the AddElementSelector
@@ -283,15 +233,12 @@ export default function Area({
         }, 10);
 
         // Handle key inputs
-        function handleKeyEvents(event: KeyboardEvent) {
-
-
-        }
+        function handleKeyEvents(event: KeyboardEvent) {}
 
         document.addEventListener("keydown", handleKeyEvents);
         return () => {
             document.removeEventListener("keydown", handleKeyEvents);
-        }
+        };
     }, []);
 
     return (
