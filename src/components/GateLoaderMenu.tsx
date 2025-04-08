@@ -17,6 +17,7 @@ export default function GateLoaderMenu({
     activeGate: Gate;
 }) {
     const [isOpen, setIsOpen] = useState(false);
+    const [newGateName, setNewGateName] = useState("");
 
     const [storedGates, setStoredGates] = useState(listStoredGateTypes());
 
@@ -85,9 +86,7 @@ export default function GateLoaderMenu({
                                 {activeGate.gateType != gateType && (
                                     <button
                                         className="cursor-pointer pl-2"
-                                        onClick={() =>
-                                            deleteGateType(gateType)
-                                        }
+                                        onClick={() => deleteGateType(gateType)}
                                     >
                                         <LuTrash2 />
                                     </button>
@@ -95,7 +94,22 @@ export default function GateLoaderMenu({
                             </div>
                         );
                     })}
-                    <button onClick={debugCreateGateFromTemplate}>Create new debug gate</button>
+                    <div className="flex w-full">
+                        <input
+                            className="border-2 border-blue-400 rounded mr-2"
+                            value={newGateName}
+                            onChange={(e) => setNewGateName(e.target.value)}
+                        ></input>
+                        <button className="cursor-pointer rounded bg-blue-500 p-2">
+                            Create
+                        </button>
+                    </div>
+                    <button
+                        className="mt-2 cursor-pointer bg-red-400"
+                        onClick={debugCreateGateFromTemplate}
+                    >
+                        Create new debug gate
+                    </button>
                 </div>
             </dialog>
         </>

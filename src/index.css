@@ -20,6 +20,9 @@ body {
     &.active {
         background-color: #3a98ff;
     }
+    &.selected {
+        border: 2px solid #3a4aff;
+    }
     &:active {
         box-shadow: 0 0 11px 0px #000000ab;
     }

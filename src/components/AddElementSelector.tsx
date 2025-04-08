@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { ElementType, Pin, Position, Uid, VirtualElement } from "../lib/types";
+import { ElementType, Pin, Position, Uid } from "../lib/types";
 import { getGateFromStorage, listStoredGateTypes } from "../lib/utils/storage";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
+import { GateAction, PerformGateAction } from "./Area";
 
 type ElementOptions = {
     gateType: string;
@@ -11,10 +12,10 @@ type ElementOptions = {
 
 export default function AddElementSelector({
     position,
-    addElement,
+    performGateAction,
 }: {
     position: Position;
-    addElement: (element: VirtualElement, pins: Pin[]) => void;
+    performGateAction: PerformGateAction;
 }) {
     const [elements, setElements] = useState<ElementOptions[]>([]);
 
@@ -30,12 +31,12 @@ export default function AddElementSelector({
             {
                 gateType: "",
                 elementType: "input",
-                label: "Input"
+                label: "Input",
             },
             {
                 gateType: "",
                 elementType: "output",
-                label: "Output"
+                label: "Output",
             },
         );
         setElements(elements);
@@ -55,8 +56,10 @@ export default function AddElementSelector({
                 pins.push({
                     id: uid,
                     gateId: gateId,
-                    index: targetGate.virtualPins.find(p => p.id == pin)?.index || 0
-                })
+                    index:
+                        targetGate.virtualPins.find((p) => p.id == pin)
+                            ?.index || 0,
+                });
             });
             targetGate.outputPins.forEach((pin) => {
                 const uid = uuidv4();
@@ -64,8 +67,10 @@ export default function AddElementSelector({
                 pins.push({
                     id: uid,
                     gateId: gateId,
-                    index: targetGate.virtualPins.find(p => p.id == pin)?.index || 0
-                })
+                    index:
+                        targetGate.virtualPins.find((p) => p.id == pin)
+                            ?.index || 0,
+                });
             });
         } else {
             const uid = uuidv4();
@@ -74,18 +79,22 @@ export default function AddElementSelector({
             pins.push({
                 id: uid,
                 gateId: options.elementType == "input" ? "in" : "out",
-                index: 0
+                index: 0,
             });
         }
 
-        addElement({
-            id: gateId,
-            position: position,
-            gateType: options.gateType,
-            elementType: options.elementType,
-            inputPins,
-            outputPins,
-        }, pins)
+        performGateAction({
+            type: GateAction.AddElement,
+            element: {
+                id: gateId,
+                position: position,
+                gateType: options.gateType,
+                elementType: options.elementType,
+                inputPins,
+                outputPins,
+            },
+            pins,
+        });
     }
 
     return (
@@ -100,7 +109,14 @@ export default function AddElementSelector({
             }}
         >
             {elements.map((el) => {
-                return <button key={"element-" + el.label} onClick={() => handleClick(el)}>{el.label}</button>;
+                return (
+                    <button
+                        key={"element-" + el.label}
+                        onClick={() => handleClick(el)}
+                    >
+                        {el.label}
+                    </button>
+                );
             })}
         </div>
     );

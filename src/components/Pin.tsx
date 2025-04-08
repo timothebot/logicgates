@@ -1,17 +1,26 @@
 import { InOut, Uid } from "../lib/types";
+import { GateAction, PerformGateAction } from "./Area";
 
 export default function Pin({
     id,
     type,
-    updateNewConnections,
+    performGateAction,
 }: {
     id: Uid;
     type: InOut;
-    updateNewConnections: (type: InOut, pinId: Uid) => void;
+    performGateAction: PerformGateAction;
 }) {
     return (
         <div
-            className="bg-blue-700 w-1.5 h-1.5 block rounded-full"
-            id={id} onClick={() => updateNewConnections(type, id)} />
+            className="block h-1.5 w-1.5 rounded-full bg-blue-700"
+            id={id}
+            onClick={() => {
+                performGateAction({
+                    type: GateAction.AddConnection,
+                    connectionType: type,
+                    pinId: id,
+                });
+            }}
+        />
     );
 }

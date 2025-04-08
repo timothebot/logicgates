@@ -1,6 +1,6 @@
 import PanZoom, { API } from "@sasza/react-panzoom";
 import AreaElement from "./AreaElement";
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { createContext, MouseEvent, useContext, useEffect, useRef, useState } from "react";
 import {
     ActiveSimulation,
     EditorTool,
@@ -10,12 +10,13 @@ import {
     VirtualElement,
     Position,
     Pin,
+    SelectedElements,
 } from "../lib/types";
 import { EquippedToolContext } from "../App";
 import Connections from "./Connections";
 import ArrowToCursor from "./ArrowToCursor";
 import { getSimulationManagerFromStorage } from "../lib/utils/storage";
-import { simulateGate } from "../lib/gates";
+import { simulateGate } from "../lib/simulation";
 import AddElementSelector from "./AddElementSelector";
 import logger from "../lib/utils/logger";
 
@@ -25,6 +26,62 @@ export const ActiveSimulationContext = createContext<ActiveSimulation>({
     activeElements: [],
     activeInputs: [],
 });
+
+export const SelectedElementsContext = createContext<SelectedElements>({
+    selectedElements: [],
+});
+
+export enum GateAction {
+    ToggleInput,
+    AddElement,
+    AddConnection,
+    DeleteElement,
+    SelectElement,
+    ResetSelectedElements
+}
+
+type ToggleInputAction = {
+    type: GateAction.ToggleInput;
+    inputId: Uid;
+};
+
+type ElementAction = {
+    element: VirtualElement;
+};
+
+type AddElementAction = ElementAction & {
+    type: GateAction.AddElement;
+    pins: Pin[];
+};
+
+type DeleteElementAction = ElementAction & {
+    type: GateAction.DeleteElement;
+};
+
+type SelectElementAction = ElementAction & {
+    type: GateAction.SelectElement;
+    event?: MouseEvent;
+};
+
+type AddConnectionAction = {
+    type: GateAction.AddConnection;
+    connectionType: InOut;
+    pinId: Uid;
+};
+
+type ResetSelectedElementsAction = {
+    type: GateAction.ResetSelectedElements;
+};
+
+type AllowedGateActions =
+    | ToggleInputAction
+    | AddElementAction
+    | DeleteElementAction
+    | SelectElementAction
+    | ResetSelectedElementsAction
+    | AddConnectionAction;
+
+export type PerformGateAction = (data: AllowedGateActions) => void;
 
 export default function Area({
     activeGate,
@@ -43,48 +100,135 @@ export default function Area({
         activeElements: [],
         activeInputs: [],
     });
+    const [selectedElements, setSelectedElements] =
+        useState<SelectedElements>({
+            selectedElements: [],
+        });
     const [elementSelectorPosition, setElementSelectorPosition] =
         useState<Position>({ x: 0, y: 0 });
 
-    function updateNewConnections(type: InOut, pinId: Uid) {
-        if (type == "in") {
-            if (
-                newConnections.length === 1 &&
-                !newConnections.includes(pinId)
-            ) {
+    /**
+     * Master function that handles all actions performed on the gate
+     * @param {AllowedGateActions} data Payload type depending on what action is selected
+     */
+    function performGateAction(data: AllowedGateActions) {
+        switch (data.type) {
+            /**
+             * Handles new connecting
+             */
+            case GateAction.AddConnection:
+                if (data.connectionType == "in") {
+                    if (
+                        newConnections.length === 1 &&
+                        !newConnections.includes(data.pinId)
+                    ) {
+                        const updatedGate = { ...editableGate };
+                        updatedGate.connections.push({
+                            from: newConnections[0],
+                            to: data.pinId,
+                        });
+                        setEditableGate(updatedGate);
+                        setNewConnections([]);
+                    }
+                    break;
+                }
+                if (newConnections.length === 0) {
+                    setNewConnections([data.pinId]);
+                }
+                break;
+
+            /**
+             * Toggles an input and recalculates the simulation
+             */
+            case GateAction.ToggleInput:
+                const newActiveSimulation = { ...activeSimulation };
+                if (activeSimulation.activeInputs.includes(data.inputId)) {
+                    newActiveSimulation.activeInputs =
+                        newActiveSimulation.activeInputs.filter(
+                            (id) => id != data.inputId,
+                        );
+                } else {
+                    newActiveSimulation.activeInputs.push(data.inputId);
+                }
+                runSimulation(newActiveSimulation);
+                break;
+
+            /**
+             * Add a new element
+             */
+            case GateAction.AddElement:
                 const updatedGate = { ...editableGate };
-                updatedGate.connections.push({
-                    from: newConnections[0],
-                    to: pinId,
-                });
+                const element = data.element;
+                updatedGate.virtualGates.push(element);
+                if (element.elementType == "input") {
+                    data.pins[0].index = updatedGate.inputPins.length;
+                    updatedGate.inputPins.push(element.outputPins[0]);
+                }
+                if (element.elementType == "output") {
+                    data.pins[0].index = updatedGate.outputPins.length;
+                    updatedGate.outputPins.push(element.inputPins[0]);
+                }
+                updatedGate.virtualPins.push(...data.pins);
                 setEditableGate(updatedGate);
-                setNewConnections([]);
-            }
-            return;
-        }
-        if (newConnections.length === 0) {
-            setNewConnections([pinId]);
+                setElementSelectorPosition({ x: 0, y: 0 });
+                break;
+
+            /**
+             * Delete an element
+             */
+            case GateAction.DeleteElement:
+                // TODO
+                break;
+            
+            /**
+             * Select element, handle shift etc.
+             */
+            case GateAction.SelectElement:
+                const unselect = selectedElements.selectedElements.includes(data.element.id);
+                let newSelectedElements: Uid[] = [];
+                if (data.event && data.event.shiftKey) {
+                    newSelectedElements = selectedElements.selectedElements;
+                    if (unselect) {
+                        newSelectedElements = newSelectedElements.filter(id => id != data.element.id);
+                    }
+                }
+                if (!unselect) {
+                    newSelectedElements.push(data.element.id);
+                }
+                setSelectedElements({ selectedElements: newSelectedElements });
+                break;
+
+            case GateAction.ResetSelectedElements:
+                setSelectedElements({
+                    selectedElements: []
+                });
+                break;
         }
     }
 
-    useEffect(() => {
-        // without this timeout, not all arrows are rendered...
-        // no idea why
-        setTimeout(() => {
-            runSimulation();
-        }, 10);
-    }, []);
+    function handleClick(props: any) {
+        performGateAction({
+            type: GateAction.ResetSelectedElements
+        });
+        if (props.e.shiftKey) {
+            // activate the AddElementSelector
+            setElementSelectorPosition({
+                x: props.e.clientX,
+                y: props.e.clientY,
+            });
+        }
+    }
 
     function runSimulation(simulation?: ActiveSimulation) {
         const currentSimulation = simulation || activeSimulation;
-        logger.log(currentSimulation)
+        logger.log(currentSimulation);
         const newActiveSimulation: ActiveSimulation = {
             activeElements: [],
             activeInputs: [...currentSimulation.activeInputs],
         };
 
         const inputs = activeGate.inputPins.map((pinId) => {
-            logger.log(pinId)
+            logger.log(pinId);
             return newActiveSimulation.activeInputs.includes(pinId);
         });
         const manager = getSimulationManagerFromStorage();
@@ -104,20 +248,6 @@ export default function Area({
         });
 
         setActiveSimulation(newActiveSimulation);
-    }
-
-    /**
-     * Toggles an input and then simulates the gate
-     */
-    function toggleInput(inputId: Uid) {
-        const newActiveSimulation = { ...activeSimulation };
-        if (activeSimulation.activeInputs.includes(inputId)) {
-            newActiveSimulation.activeInputs =
-                newActiveSimulation.activeInputs.filter((id) => id != inputId);
-        } else {
-            newActiveSimulation.activeInputs.push(inputId);
-        }
-        runSimulation(newActiveSimulation);
     }
 
     /**
@@ -144,63 +274,59 @@ export default function Area({
         };
     }, [editableGate, activeGate]);
 
-    function handleClick(props: any) {
-        if (props.e.shiftKey) {
-            setElementSelectorPosition({
-                x: props.e.clientX,
-                y: props.e.clientY,
-            });
-        }
-    }
+    useEffect(() => {
+        // Run the simulation when the page is loaded
+        setTimeout(() => {
+            // without this timeout, not all arrows are rendered...
+            // no idea why
+            runSimulation();
+        }, 10);
 
-    function addElement(element: VirtualElement, pins: Pin[]) {
-        const updatedGate = { ...editableGate };
-        updatedGate.virtualGates.push(element);
-        if (element.elementType == "input") {
-            pins[0].index = updatedGate.inputPins.length;
-            updatedGate.inputPins.push(element.outputPins[0]);
+        // Handle key inputs
+        function handleKeyEvents(event: KeyboardEvent) {
+
+
         }
-        if (element.elementType == "output") {
-            pins[0].index = updatedGate.outputPins.length;
-            updatedGate.outputPins.push(element.inputPins[0]);
+
+        document.addEventListener("keydown", handleKeyEvents);
+        return () => {
+            document.removeEventListener("keydown", handleKeyEvents);
         }
-        updatedGate.virtualPins.push(...pins);
-        setEditableGate(updatedGate);
-        setElementSelectorPosition({ x: 0, y: 0 });
-    }
+    }, []);
 
     return (
         <div style={{ width: "100dvw", height: "100dvh" }}>
             <ActiveSimulationContext value={activeSimulation}>
-                <PanZoom
-                    onContextMenu={(props) => props.e.preventDefault()}
-                    onContainerClick={handleClick}
-                    height={2000}
-                    width={2000}
-                    selecting={tool == EditorTool.Select}
-                    zoomMin={0.5}
-                    boundary={{
-                        left: 0,
-                    }}
-                    ref={panZoomRef}
-                >
-                    {editableGate.virtualGates.map((vGate) => (
-                        <AreaElement
-                            key={vGate.id}
-                            toggleInput={toggleInput}
-                            updateNewConnections={updateNewConnections}
-                            element={vGate}
-                        />
-                    ))}
-                </PanZoom>
-                <Connections gate={editableGate} />
-                {newConnections.length > 0 && (
-                    <ArrowToCursor connections={newConnections} />
-                )}
-                <AddElementSelector
-                    position={elementSelectorPosition}
-                    addElement={addElement}
-                />
+                <SelectedElementsContext value={selectedElements}>
+                    <PanZoom
+                        onContextMenu={(props) => props.e.preventDefault()}
+                        onContainerClick={handleClick}
+                        height={2000}
+                        width={2000}
+                        selecting={tool == EditorTool.Select}
+                        zoomMin={0.5}
+                        boundary={{
+                            left: 0,
+                        }}
+                        ref={panZoomRef}
+                    >
+                        {editableGate.virtualGates.map((vGate) => (
+                            <AreaElement
+                                key={vGate.id}
+                                performGateAction={performGateAction}
+                                element={vGate}
+                            />
+                        ))}
+                    </PanZoom>
+                    <Connections gate={editableGate} />
+                    {newConnections.length > 0 && (
+                        <ArrowToCursor connections={newConnections} />
+                    )}
+                    <AddElementSelector
+                        position={elementSelectorPosition}
+                        performGateAction={performGateAction}
+                    />
+                </SelectedElementsContext>
             </ActiveSimulationContext>
         </div>
     );

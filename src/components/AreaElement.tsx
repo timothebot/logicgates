@@ -1,24 +1,34 @@
 import { Element } from "@sasza/react-panzoom";
-import { InOut, Uid, VirtualElement } from "../lib/types";
+import { VirtualElement } from "../lib/types";
 import Pin from "./Pin";
-import { ReactNode, useContext, useEffect, useState } from "react";
-import { ActiveSimulationContext } from "./Area";
+import { MouseEvent, ReactNode, useContext, useEffect, useState } from "react";
+import { ActiveSimulationContext, GateAction, PerformGateAction, SelectedElementsContext } from "./Area";
 
 export default function AreaElement({
     element,
-    updateNewConnections,
-    toggleInput,
+    performGateAction
 }: {
     element: VirtualElement;
-    updateNewConnections: (type: InOut, pinId: Uid) => void;
-    toggleInput: (inputId: Uid) => void;
+    performGateAction: PerformGateAction
 }) {
     const activeSimulation = useContext(ActiveSimulationContext);
+    const selectedElements = useContext(SelectedElementsContext);
+
     const [isActive, setIsActive] = useState(false);
 
-    function handleClick(_: any) {
+    function handleClick(event: MouseEvent) {
+        performGateAction({
+            type: GateAction.SelectElement,
+            element: element,
+            event: event
+        })
+    }
+    function handleDoubleClick(_: any) {
         if (element.elementType == "input") {
-            toggleInput(element.outputPins[0]);
+            performGateAction({
+                type: GateAction.ToggleInput,
+                inputId: element.outputPins[0]
+            });
         }
     }
 
@@ -43,8 +53,9 @@ export default function AreaElement({
     return (
         <Element id={element.id} x={element.position.x} y={element.position.y}>
             <div
-                className={"element " + (isActive ? "active" : "")}
-                onDoubleClick={handleClick}
+                className={"element" + (isActive ? " active" : "") + (selectedElements.selectedElements.includes(element.id) ? " selected" : "")}
+                onClick={handleClick}
+                onDoubleClick={handleDoubleClick}
             >
                 {element.inputPins.length > 0 && (
                     <div className="input">
@@ -53,7 +64,7 @@ export default function AreaElement({
                                 key={pin}
                                 id={pin}
                                 type="in"
-                                updateNewConnections={updateNewConnections}
+                                performGateAction={performGateAction}
                             />
                         ))}
                     </div>
@@ -66,7 +77,7 @@ export default function AreaElement({
                                 key={pin}
                                 id={pin}
                                 type="out"
-                                updateNewConnections={updateNewConnections}
+                                performGateAction={performGateAction}
                             />
                         ))}
                     </div>
