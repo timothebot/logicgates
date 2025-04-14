@@ -5,7 +5,6 @@ import {
     ActiveSimulationContext,
     SelectedElementsContext,
 } from "@components/Area";
-import logger from "@lib/utils/logger";
 
 const INACTIVE_COLOR = "oklch(0.208 0.042 265.755)";
 const ACTIVE_COLOR = "oklch(0.715 0.143 215.221)";

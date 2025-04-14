@@ -9,7 +9,6 @@ import {
     PerformGateAction,
     VirtualElement,
 } from "@lib/types";
-import logger from "@lib/utils/logger";
 import { Element } from "@sasza/react-panzoom";
 import { MouseEvent, ReactNode, useContext, useEffect, useState } from "react";
 

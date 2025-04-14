@@ -30,13 +30,15 @@ export default function AddElementSelector({
     const [elements, setElements] = useState<ElementOptions[]>([]);
 
     useEffect(() => {
-        const elements: ElementOptions[] = listStoredGateTypes().map((type) => {
-            return {
-                gateType: type,
-                elementType: "gate",
-                label: type,
-            };
-        });
+        const elements: ElementOptions[] = listStoredGateTypes()
+            .filter((type) => type != activeGate.gateType)
+            .map((type) => {
+                return {
+                    gateType: type,
+                    elementType: "gate",
+                    label: type,
+                };
+            });
         elements.push(
             {
                 gateType: "",
@@ -116,7 +118,7 @@ export default function AddElementSelector({
                 id: gateId,
                 position: {
                     x: 0,
-                    y: 0
+                    y: 0,
                 },
                 gateType: options.gateType,
                 elementType: options.elementType,
@@ -130,13 +132,13 @@ export default function AddElementSelector({
     return (
         <div
             className={
-                "absolute grid gap-y-1 scroll-auto rounded border-1 border-slate-500 bg-slate-100 p-2.5 shadow top-1/2 left-2.5 -translate-y-1/2"
+                "absolute top-1/2 left-2.5 grid -translate-y-1/2 gap-y-1 scroll-auto rounded border-1 border-slate-500 bg-slate-100 p-2.5 shadow"
             }
         >
             {elements.map((el) => {
                 return (
                     <button
-                        className="cursor-pointer rounded p-2 text-left shadow hover:bg-blue-500 font-semibold uppercase bg-white hover:text-white transition-colors"
+                        className="cursor-pointer rounded bg-white p-2 text-left font-semibold uppercase shadow transition-colors hover:bg-blue-500 hover:text-white"
                         key={"element-" + el.label}
                         onClick={() => handleClick(el)}
                     >

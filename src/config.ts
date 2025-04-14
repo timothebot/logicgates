@@ -1,5 +1,3 @@
-import logger from "@lib/utils/logger";
-
 type AppConfig = {
     version: string;
     logLevel: "verbose" | "alert" | "error" | "warn" | "info" | "fail" | "success" | "log" | "debug";
@@ -14,6 +12,7 @@ if (import.meta.env.DEV) {
     appConfig.logLevel = "verbose";
 }
 
+// Logger is not available yet
 console.log("Starting app with config", appConfig);
 
 export default appConfig;
