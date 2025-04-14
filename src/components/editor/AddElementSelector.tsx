@@ -4,7 +4,6 @@ import {
     Gate,
     GateAction,
     PerformGateAction,
-    Position,
 } from "@lib/types";
 import { listStoredGateTypes } from "@lib/utils/storage";
 import { useEffect, useState } from "react";

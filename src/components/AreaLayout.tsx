@@ -1,5 +1,5 @@
 import PanZoom, { API } from "@sasza/react-panzoom";
-import { useContext, useRef } from "react";
+import { useContext } from "react";
 import AreaElement from "@components/simulation/AreaElement";
 import Connections from "@components/simulation/Connections";
 import ArrowToCursor from "@components/editor/ArrowToCursor";
