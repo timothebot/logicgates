@@ -7,6 +7,9 @@
   modern free logic gates simulation
 </div>
 
+<br>
+<br>
+
 <p align="center">
   <img src="public/demo.png">
 </p>
