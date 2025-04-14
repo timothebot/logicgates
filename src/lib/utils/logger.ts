@@ -1,7 +1,8 @@
+import appConfig from '@/config';
 import adze, { setup } from 'adze';
 
 setup({
-    activeLevel: 'verbose'
+    activeLevel: appConfig.logLevel
 })
 
 const logger = adze.withEmoji.seal();

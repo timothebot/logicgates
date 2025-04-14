@@ -24,8 +24,6 @@ import {
 import PanZoom, { API } from "@sasza/react-panzoom";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
-const SAVE_INTERVAL_MS = 1000;
-
 export const ActiveSimulationContext = createContext<ActiveSimulation>({
     activeElements: [],
     activeInputs: [],
@@ -155,7 +153,7 @@ export default function Area({
                             },
                         );
                     }
-    
+
                     // Remove connections, pins and the element itself
                     updatedGate.connections = updatedGate.connections.filter(
                         (conn) => {
@@ -177,9 +175,11 @@ export default function Area({
                     );
                 }
                 if (data.connection) {
-                    updatedGate.connections = updatedGate.connections.filter(conn => {
-                        return conn != data.connection;
-                    })
+                    updatedGate.connections = updatedGate.connections.filter(
+                        (conn) => {
+                            return conn != data.connection;
+                        },
+                    );
                 }
 
                 setEditableGate(updatedGate);
@@ -333,12 +333,12 @@ export default function Area({
                         });
                     }
                 });
-                selectedElements.selectedConnections.forEach(conn => {
+                selectedElements.selectedConnections.forEach((conn) => {
                     performGateAction({
                         type: GateAction.DeleteElement,
-                        connection: conn
-                    })
-                })
+                        connection: conn,
+                    });
+                });
             }
 
             if (event.key == "a") {

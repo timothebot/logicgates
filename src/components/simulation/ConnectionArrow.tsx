@@ -1,7 +1,10 @@
 import Xarrow, { useXarrow } from "react-xarrows";
 import { Connection, GateAction, PerformGateAction } from "@lib/types";
 import { MouseEvent, useContext, useEffect, useState } from "react";
-import { ActiveSimulationContext, SelectedElementsContext } from "@components/Area";
+import {
+    ActiveSimulationContext,
+    SelectedElementsContext,
+} from "@components/Area";
 import logger from "@lib/utils/logger";
 
 const INACTIVE_COLOR = "oklch(0.208 0.042 265.755)";
@@ -53,16 +56,17 @@ export default function ConnectionArrow({
             strokeWidth={2}
             path={"grid"}
             divContainerProps={{
-                onClick: (event: MouseEvent) => performGateAction({
-                    type: GateAction.SelectElement,
-                    connection: conn,
-                    event
-                }),
+                onClick: (event: MouseEvent) =>
+                    performGateAction({
+                        type: GateAction.SelectElement,
+                        connection: conn,
+                        event,
+                    }),
             }}
             divContainerStyle={{
                 cursor: "pointer",
                 padding: "2px",
-                background: "green"
+                background: "green",
             }}
             startAnchor={"right"}
             endAnchor={"left"}

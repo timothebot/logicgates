@@ -7,7 +7,7 @@ export enum GateAction {
     AddConnection = "AddConnection",
     DeleteElement = "DeleteElement",
     SelectElement = "SelectElement",
-    ResetSelectedElements = "ResetSelectedElements"
+    ResetSelectedElements = "ResetSelectedElements",
 }
 
 export type ToggleInputAction = {

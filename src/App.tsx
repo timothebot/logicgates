@@ -11,6 +11,7 @@ import {
     writeGateToStorage,
 } from "./lib/utils/storage";
 import GateTitle from "./components/editor/GateTitle";
+import appConfig from "@/config";
 
 export const EquippedToolContext = createContext<EditorTool>(
     EditorTool.Default,
@@ -68,6 +69,9 @@ function App() {
                     </>
                 )}
             </EquippedToolContext>
+            <div className="fixed right-0 bottom-0 opacity-20 text-xl m-4">
+                {appConfig.version}
+            </div>
         </>
     );
 }

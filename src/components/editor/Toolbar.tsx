@@ -46,15 +46,15 @@ export default function Toolbar({
     }, []);
 
     return (
-        <div className="absolute bottom-2.5 left-1/2 flex -translate-1/2 gap-x-2 rounded border-1 border-slate-100 bg-white p-2.5 shadow">
+        <div className="absolute bottom-2 left-1/2 flex -translate-1/2 gap-x-2 rounded border-1 border-slate-400 bg-white p-2.5 shadow">
             {tools.map((toolButton) => {
                 return (
                     <button
                         className={
+                            "cursor-pointer rounded p-2 shadow transition-colors " +
                             (toolButton.tool == tool
-                                ? "bg-blue-300"
-                                : "bg-slate-100 hover:bg-blue-100") +
-                            " cursor-pointer rounded p-1 shadow transition-colors"
+                                ? "bg-blue-500 text-white"
+                                : "bg-white hover:bg-blue-200")
                         }
                         key={toolButton.label}
                         title={toolButton.label}
@@ -64,12 +64,6 @@ export default function Toolbar({
                     </button>
                 );
             })}
-            <button
-                className="cursor-pointer rounded bg-slate-100 p-1 shadow transition-colors hover:bg-blue-100"
-                onClick={() => localStorage.clear()}
-            >
-                Clear Storage
-            </button>
         </div>
     );
 }

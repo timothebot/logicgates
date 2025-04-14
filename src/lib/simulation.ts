@@ -30,7 +30,7 @@ export function simulateGate(
 
     let changesOccurred = true;
     let iterations = 0;
-    const maxIterations = 1000;
+    const maxIterations = 10;
     while (changesOccurred && iterations < maxIterations) {
         iterations++;
         changesOccurred = false;
