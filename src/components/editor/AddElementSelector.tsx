@@ -23,7 +23,7 @@ export default function AddElementSelector({
     position,
     performGateAction,
 }: {
-    activeGate: Gate,
+    activeGate: Gate;
     position: Position;
     performGateAction: PerformGateAction;
 }) {
@@ -56,8 +56,8 @@ export default function AddElementSelector({
             {
                 gateType: "and",
                 elementType: "gate",
-                label: "AND"
-            }
+                label: "AND",
+            },
         );
         setElements(elements);
     }, [position]);
@@ -77,7 +77,7 @@ export default function AddElementSelector({
             } else {
                 targetGate = getGateFromStorage(options.gateType);
             }
-            targetGate.inputPins.forEach((pin) => {
+            targetGate.inputPins.forEach((pin, index) => {
                 const uid = uuidv4();
                 inputPins.push(uid);
                 pins.push({
@@ -85,18 +85,18 @@ export default function AddElementSelector({
                     gateId: gateId,
                     index:
                         targetGate.virtualPins.find((p) => p.id == pin)
-                            ?.index || 0,
+                            ?.index || index,
                 });
             });
-            targetGate.outputPins.forEach((pin) => {
+            targetGate.outputPins.forEach((pin, index) => {
                 const uid = uuidv4();
                 outputPins.push(uid);
                 pins.push({
                     id: uid,
                     gateId: gateId,
                     index:
-                        targetGate.virtualPins.find((p) => p.id == pin)
-                            ?.index || 0,
+                        targetGate.virtualPins.find((p) => p.id === pin)
+                            ?.index || index,
                 });
             });
         } else {
@@ -114,7 +114,10 @@ export default function AddElementSelector({
             type: GateAction.AddElement,
             element: {
                 id: gateId,
-                position: position,
+                position: {
+                    x: 0,
+                    y: 0
+                },
                 gateType: options.gateType,
                 elementType: options.elementType,
                 inputPins,
@@ -127,18 +130,13 @@ export default function AddElementSelector({
     return (
         <div
             className={
-                "absolute grid gap-x-2 rounded border-1 scroll-auto border-slate-100 bg-white p-2.5 shadow " +
-                (position.x == 0 ? "opacity-0" : "")
+                "absolute grid gap-y-1 scroll-auto rounded border-1 border-slate-500 bg-slate-100 p-2.5 shadow top-1/2 left-2.5 -translate-y-1/2"
             }
-            style={{
-                top: position.y,
-                left: position.x,
-            }}
         >
             {elements.map((el) => {
                 return (
                     <button
-                        className="shadow rounded p-2 text-left hover:bg-blue-300 cursor-pointer"
+                        className="cursor-pointer rounded p-2 text-left shadow hover:bg-blue-500 font-semibold uppercase bg-white hover:text-white transition-colors"
                         key={"element-" + el.label}
                         onClick={() => handleClick(el)}
                     >

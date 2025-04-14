@@ -115,6 +115,17 @@ export default function Area({
             case GateAction.AddElement: {
                 const updatedGate = { ...editableGate };
                 const element = data.element;
+                if (element.position.x == 0 && element.position.y == 0) {
+                    const gridPos = panZoomRef.current?.getPosition();
+                    const zoom = panZoomRef.current?.getZoom();
+                    if (gridPos && zoom) {
+                        element.position = {
+                            x: -gridPos.x + window.innerWidth / 2 / zoom,
+                            y: -gridPos.y + window.innerHeight / 2 / zoom
+                        };
+                        logger.log(element.position, gridPos, window.innerWidth, zoom)
+                    }
+                }
                 updatedGate.virtualGates.push(element);
                 if (element.elementType == "input") {
                     data.pins[0].index = updatedGate.inputPins.length;
@@ -126,7 +137,6 @@ export default function Area({
                 }
                 updatedGate.virtualPins.push(...data.pins);
                 setEditableGate(updatedGate);
-                setElementSelectorPosition({ x: 0, y: 0 });
                 break;
             }
 
@@ -247,7 +257,8 @@ export default function Area({
         save();
     }, [editableGate]);
 
-    function handleClick({ e }: { e: MouseEvent }) {
+    function handleClick({ e }: { e: MouseEvent; }) {
+        logger.verbose(panZoomRef.current?.getPosition())
         if (e.shiftKey) {
             // activate the AddElementSelector
             setElementSelectorPosition({
@@ -397,6 +408,7 @@ export default function Area({
                     >
                         {editableGate.virtualGates.map((vGate) => (
                             <AreaElement
+                                activeGate={activeGate}
                                 key={vGate.id}
                                 performGateAction={performGateAction}
                                 element={vGate}

@@ -1,3 +1,4 @@
+import logger from "@lib/utils/logger";
 
 type AppConfig = {
     version: string;
@@ -8,5 +9,11 @@ const appConfig: AppConfig = {
     version: "1.0.0-alpha",
     logLevel: "info"
 };
+
+if (import.meta.env.DEV) {
+    appConfig.logLevel = "verbose";
+}
+
+console.log("Starting app with config", appConfig);
 
 export default appConfig;

@@ -24,6 +24,7 @@ export type VirtualElement = {
 
     /**
      * Links to the related gate logic in the gates lookup
+     * e.g. "not", "or", "xor"
      */
     gateType: string;
 
@@ -33,6 +34,7 @@ export type VirtualElement = {
     outputPins: Uid[];
 
     position: Position;
+    label?: string;
 };
 
 /**

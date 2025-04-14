@@ -6,14 +6,17 @@ import logger from "./utils/logger";
 type SimulatedResult = {
     gate: Gate;
     pinValues: Map<Uid, boolean>;
-}
+};
 
 export function simulateGate(
     gate: Gate,
     inputValues: boolean[], // change this to make it semi-work
-    manager: SimulationManager
+    manager: SimulationManager,
+    root: boolean = true,
 ): SimulatedResult {
-    logger.verbose("Simulating gate '" + gate.gateType + "'", inputValues)
+    if (root) {
+        logger.verbose("Simulating gate '" + gate.gateType + "'", inputValues);
+    }
     const pinValues: Map<Uid, boolean> = new Map<Uid, boolean>();
 
     gate.inputPins.forEach((pinId, index) => {
@@ -30,7 +33,7 @@ export function simulateGate(
 
     let changesOccurred = true;
     let iterations = 0;
-    const maxIterations = 10;
+    const maxIterations = 100;
     while (changesOccurred && iterations < maxIterations) {
         iterations++;
         changesOccurred = false;
@@ -40,7 +43,6 @@ export function simulateGate(
             if (vGate.outputPins.length == 0 ||
                 !isGateConnected(gate, vGate) ||
                 pinValues.has(vGate.outputPins[0])) {
-                logger.verbose("Skipping element", vGate)
                 return;
             }
 
@@ -49,7 +51,9 @@ export function simulateGate(
             const inPins: boolean[] = [];
             vGate.inputPins.forEach(pinId => {
                 if (!pinValues.has(pinId)) {
-                    logger.verbose("pin has no value", pinId)
+                    if (root) {
+                        logger.verbose("Input pin (gate '" + vGate.gateType + "') has no value", pinId);
+                    }
                     return;
                 }
                 const pin = getPinFromGate(gate, pinId);
@@ -58,14 +62,23 @@ export function simulateGate(
             });
 
             if (Object.keys(inPins).length !== vGate.inputPins.length) {
-                logger.debug("Input pins mismatch, found " + inPins.length, vGate, gate)
+                if (root) {
+                    logger.debug(
+                        "Amount of input pins mismatch, need " + vGate.inputPins.length + ", found " + inPins.length,
+                        {
+                            "gate": gate,
+                            "vGate": vGate
+                        }
+                     );
+                }
                 return;
             }
 
             const currentGate = getGateByType(manager, vGate.gateType);
             const output = runGate(currentGate, inPins, manager);
-            logger.verbose("Current gateType: '" + currentGate.gateType, "', inputs / outputs: ", inPins, output)
-
+            if (root) {
+                logger.verbose("Current gateType: '" + currentGate.gateType, "', inputs / outputs: ", inPins, output);
+            }
             vGate.outputPins.forEach(pinId => {
                 const pin = getPinFromGate(gate, pinId);
 
@@ -84,7 +97,7 @@ export function simulateGate(
     }
 
     if (iterations >= maxIterations) {
-        logger.error("Something went wrong; too many simulation iterations")
+        logger.error("Something went wrong; too many simulation iterations for gate: '" + gate.gateType + "'");
     }
 
     return {
@@ -131,7 +144,8 @@ export function runGate(
         simulateGate(
             gate,
             inputs,
-            manager
+            manager,
+            false
         )
     );
 }
