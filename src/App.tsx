@@ -12,6 +12,7 @@ import {
 } from "./lib/utils/storage";
 import GateTitle from "./components/editor/GateTitle";
 import appConfig from "@/config";
+import { Analytics } from "@vercel/analytics/react";
 
 export const EquippedToolContext = createContext<EditorTool>(
     EditorTool.Default,
@@ -69,9 +70,10 @@ function App() {
                     </>
                 )}
             </EquippedToolContext>
-            <div className="fixed right-0 bottom-0 opacity-20 text-xl m-4">
+            <div className="fixed right-0 bottom-0 m-4 text-xl opacity-20">
                 {appConfig.version}
             </div>
+            <Analytics />
         </>
     );
 }
