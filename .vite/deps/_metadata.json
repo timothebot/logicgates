@@ -1,0 +1,52 @@
+{
+  "hash": "43ec4371",
+  "configHash": "5520b220",
+  "lockfileHash": "c4498bdb",
+  "browserHash": "91227f67",
+  "optimized": {
+    "react/jsx-dev-runtime": {
+      "src": "../../node_modules/react/jsx-dev-runtime.js",
+      "file": "react_jsx-dev-runtime.js",
+      "fileHash": "1ff6952b",
+      "needsInterop": true
+    },
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "a7534dfc",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "35ded822",
+      "needsInterop": true
+    },
+    "react-icons/lu": {
+      "src": "../../node_modules/react-icons/lu/index.mjs",
+      "file": "react-icons_lu.js",
+      "fileHash": "1d4d77ac",
+      "needsInterop": false
+    },
+    "@sasza/react-panzoom": {
+      "src": "../../node_modules/@sasza/react-panzoom/dist/main.js",
+      "file": "@sasza_react-panzoom.js",
+      "fileHash": "3951b0a7",
+      "needsInterop": false
+    },
+    "adze": {
+      "src": "../../node_modules/adze/dist/index.js",
+      "file": "adze.js",
+      "fileHash": "e7c6f13f",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-VUPZMC2T": {
+      "file": "chunk-VUPZMC2T.js"
+    },
+    "chunk-EQCVQC35": {
+      "file": "chunk-EQCVQC35.js"
+    }
+  }
+}
