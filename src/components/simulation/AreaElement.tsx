@@ -1,8 +1,6 @@
-import {
-    ActiveSimulationContext,
-    SelectedElementsContext,
-} from "@components/Area";
 import Pin from "@components/simulation/Pin";
+import ActiveSimulationContext from "@lib/contexts/ActiveSimulationContext";
+import SelectedElementsContext from "@lib/contexts/SelectedElementsContext";
 import {
     Gate,
     GateAction,

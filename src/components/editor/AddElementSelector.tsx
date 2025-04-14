@@ -1,16 +1,13 @@
-import { AND_GATE, NOT_GATE } from "@lib/default_gates";
+import { createVirtualGateFrom } from "@lib/gates";
 import {
     ElementType,
     Gate,
     GateAction,
     PerformGateAction,
-    Pin,
     Position,
-    Uid,
 } from "@lib/types";
-import { getGateFromStorage, listStoredGateTypes } from "@lib/utils/storage";
+import { listStoredGateTypes } from "@lib/utils/storage";
 import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 
 type ElementOptions = {
     gateType: string;
@@ -20,11 +17,9 @@ type ElementOptions = {
 
 export default function AddElementSelector({
     activeGate,
-    position,
     performGateAction,
 }: {
     activeGate: Gate;
-    position: Position;
     performGateAction: PerformGateAction;
 }) {
     const [elements, setElements] = useState<ElementOptions[]>([]);
@@ -62,70 +57,15 @@ export default function AddElementSelector({
             },
         );
         setElements(elements);
-    }, [position]);
+    }, [activeGate.gateType]);
 
     function handleClick(options: ElementOptions) {
-        let inputPins: Uid[] = [];
-        let outputPins: Uid[] = [];
-        const pins: Pin[] = [];
-        const gateId = uuidv4();
-
-        if (options.elementType == "gate") {
-            let targetGate;
-            if (options.gateType == "and") {
-                targetGate = AND_GATE;
-            } else if (options.gateType == "not") {
-                targetGate = NOT_GATE;
-            } else {
-                targetGate = getGateFromStorage(options.gateType);
-            }
-            targetGate.inputPins.forEach((pin, index) => {
-                const uid = uuidv4();
-                inputPins.push(uid);
-                pins.push({
-                    id: uid,
-                    gateId: gateId,
-                    index:
-                        targetGate.virtualPins.find((p) => p.id == pin)
-                            ?.index || index,
-                });
-            });
-            targetGate.outputPins.forEach((pin, index) => {
-                const uid = uuidv4();
-                outputPins.push(uid);
-                pins.push({
-                    id: uid,
-                    gateId: gateId,
-                    index:
-                        targetGate.virtualPins.find((p) => p.id === pin)
-                            ?.index || index,
-                });
-            });
-        } else {
-            const uid = uuidv4();
-            inputPins = options.elementType == "input" ? [] : [uid];
-            outputPins = options.elementType == "output" ? [] : [uid];
-            pins.push({
-                id: uid,
-                gateId: options.elementType == "input" ? "in" : "out",
-                index: 0,
-            });
-        }
+        const result = createVirtualGateFrom(options.elementType, options.gateType);
 
         performGateAction({
             type: GateAction.AddElement,
-            element: {
-                id: gateId,
-                position: {
-                    x: 0,
-                    y: 0,
-                },
-                gateType: options.gateType,
-                elementType: options.elementType,
-                inputPins,
-                outputPins,
-            },
-            pins,
+            element: result.element,
+            pins: result.pins,
         });
     }
 
